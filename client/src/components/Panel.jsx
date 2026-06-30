@@ -2,12 +2,18 @@ import {FaSearch } from "react-icons/fa";
 import { IoSettingsOutline,IoCloseOutline,IoSend } from 'react-icons/io5';
 import { useState } from "react";
 import { BsPinAngleFill, BsJournalText } from 'react-icons/bs';
-
-function Panel(){
+import { useNavigate } from "react-router-dom";
+function Panel({setIsNewChat,setInput}){
     const [showPanel,setShowPanel]=useState(false);
     const pinnedChats=[];
     const notes=[];
     const [activeTab,setActiveTab]=useState("pinned");
+    const navigate=useNavigate();
+    const handleNewChat=()=>{
+        setIsNewChat?.(true);
+        setInput?.("");
+        navigate("/");
+    }
     return(
         <>
             <div className="relative w-full">
@@ -16,7 +22,7 @@ function Panel(){
                         <FaSearch className="text-gray-400"/>
                         <input type="text" placeholder="Search Topics..." className="w-full bg-transparent outline-none text-white placeholder-gray-500"/>
                     </div>
-                    <button className="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white shrink-0">+ New Chat</button>
+                    <button className="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white shrink-0" onClick={handleNewChat}>+ New Chat</button>
                     <button className="p-2 rounded-lg hover:bg-purple-500/20 text-purple-300 shrink-0" onClick={()=>setShowPanel(!showPanel)}>
                         <IoSettingsOutline/>
                     </button>

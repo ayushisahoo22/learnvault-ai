@@ -1,10 +1,10 @@
 import Sidebar from "../components/Sidebar"
 import Chat from "../components/Chat"
-function Dashboard(){
+function Dashboard({topics,setTopics}){
     return(
-        <div className="flex h-screen">
-            <Sidebar/>    
-            <Chat/>
+        <div className="flex h-screen overflow-hidden bg-slate-950">
+            <Sidebar topics={topics}/>    
+            <Chat topics={topics} setTopics={setTopics}/>
         </div>
     )
 }

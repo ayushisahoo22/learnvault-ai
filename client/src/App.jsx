@@ -1,10 +1,24 @@
+import {BrowserRouter,Routes,Route} from "react-router-dom"
 import Dashboard from './pages/Dashboard'
+import TopicPage from "./pages/TopicPage";
+import { useState } from "react";
 function App() {
-  return (
-    <>
-      <Dashboard/>
-    </>
-  )
+    const [topics,setTopics] = useState([]);
+    return(
+        <BrowserRouter>
+            <Routes>
+                <Route path="/" element={<Dashboard
+                    topics={topics}
+                    setTopics={setTopics}
+                />
+            }/>
+                <Route path="/topic/:name" element={<TopicPage
+                    topics={topics}
+                />
+                }/>
+            </Routes>
+        </BrowserRouter>
+    )
 }
 
 export default App
