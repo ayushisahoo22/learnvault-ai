@@ -34,25 +34,27 @@ function TopicPage({topics}){
                 flex-col
                 gap-3
                 "> {
-                    selectedTopic?.chats?.length>0?(
-                        <div className="mt-6 flex flex-col gap-3">
-                            {selectedTopic.chats.map((chat,index)=>(
+                    selectedTopic?.conversations?.length > 0 ? (
+                        selectedTopic.conversations.map(
+                            (conversation,index)=>(
                                 <div
-                                    key={index}
+                                    key={conversation.id}
                                     className="
-                                    p-3
+                                    p-4
                                     rounded-xl
                                     bg-slate-800
-                                    text-gray-200
+                                    hover:bg-slate-700
+                                    cursor-pointer
+                                    text-white
                                     "
                                 >
-                                    {chat.text}
+                                    {conversation.title}
                                 </div>
-                            ))}
-                        </div>
-                    ):(
-                         <p className="text-gray-500 text-center mt-10">
-                                No discussion available
+                            )
+                        )
+                    ) : (
+                        <p className="text-gray-500 text-center mt-10">
+                            No discussion available
                         </p>
                     )
                 }

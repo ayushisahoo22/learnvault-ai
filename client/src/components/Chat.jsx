@@ -39,51 +39,145 @@ function Chat({topics,setTopics}){
         return "general";
     }
     const navigate=useNavigate();
+    const [pinnedChats,setPinnedChats]=useState([]);
+    const [notes,setNotes]=useState([]);
     const [input,setInput] = useState("");
+    const [currentConversationId,setCurrentConversationId]=useState(null);
     const[isNewChat,setIsNewChat]=useState(true);
-    const handleSend = ()=>{
+    const currentConversation = topics
+    ?.flatMap(topic=>topic.conversations)
+    ?.find(
+        conversation =>
+        conversation.id===currentConversationId
+    );
+    const handleSend=()=>{
+
         if(!input.trim()) return;
+
         setIsNewChat(false);
+
         const detectedTopic=detectTopic(input);
+
+        const userMessage={
+            sender:"user",
+            text:input
+        };
+
+        const aiMessage={
+            sender:"ai",
+            text:`I am helping you learn about ${detectedTopic}`
+        };
+
+        const newConversation={
+            id:Date.now(),
+            title:input,
+            chats:[
+                userMessage,
+                aiMessage
+            ]
+        };
+
+        let activeId=currentConversationId;
+
+        // First message after clicking New Chat
+        if(!activeId){
+            activeId=newConversation.id;
+            setCurrentConversationId(activeId);
+        }
+
         setTopics(prev=>{
-            const existingTopic= prev.find(topic=>topic.name===detectedTopic);
-            if(existingTopic){
-                return prev.map((topic)=>(
-                    topic.name===detectedTopic?{
+
+            let conversationFound=false;
+
+            const updatedTopics=prev.map(topic=>{
+
+                const exists=topic.conversations?.some(
+                    conversation=>conversation.id===activeId
+                );
+
+                if(exists){
+
+                    conversationFound=true;
+
+                    return{
                         ...topic,
-                        chats:[
-                            ...topic.chats,
-                            {
-                                sender:"user",
-                                text:input
+                        conversations:
+                        topic.conversations.map(
+                            conversation=>
+
+                            conversation.id===activeId
+                            ?{
+                                ...conversation,
+                                chats:[
+                                    ...conversation.chats,
+                                    userMessage,
+                                    aiMessage
+                                ]
                             }
+                            :conversation
+                        )
+                    };
+                }
+
+                return topic;
+            });
+
+            // New conversation
+            if(!conversationFound){
+
+                const existingTopic=
+                updatedTopics.find(
+                    topic=>topic.name===detectedTopic
+                );
+
+                if(existingTopic){
+
+                    return updatedTopics.map(topic=>
+
+                        topic.name===detectedTopic
+                        ?{
+                            ...topic,
+                            conversations:[
+                                ...topic.conversations,
+                                newConversation
+                            ]
+                        }
+                        :topic
+                    );
+                }
+
+                return[
+                    ...updatedTopics,
+                    {
+                        name:detectedTopic,
+                        conversations:[
+                            newConversation
                         ]
-                    }:topic
-                ))
+                    }
+                ];
             }
 
-            return [
-                ...prev,
-                {
-                    name:detectedTopic,
-                    chats:[
-                        {
-                            sender:"user",
-                            text:input
-                        }
-                    ]
-                }
-            ]
-        })
-        setInput("")
+            return updatedTopics;
+
+        });
+
+        setInput("");
     }
     return(
         <>
             <div className="flex-1 flex flex-col bg-slate-950 p-6 h-full overflow-hidden">
-                <Panel setIsNewChat={setIsNewChat} setInput={setInput}/>
-                    <div className="flex-1 flex items-center justify-center overflow-hidden">
+                <Panel setIsNewChat={setIsNewChat} setInput={setInput} setCurrentConversationId={setCurrentConversationId} pinnedChats={pinnedChats} notes={notes}/>
+                    <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
                         { isNewChat || topics?.length===0?(
-                            <div className="text-center px-4 mb-32">
+                            <div className="flex-1
+                                    flex
+                                    flex-col
+                                    justify-center
+                                    items-center
+                                    text-center
+                                    px-4
+                                    mb-32
+                                    ">
                                 <h1 className="text-3xl md:text-5xl font-bold bg-gradient-to-r from-purple-400 via-fuchsia-300 to-cyan-300 bg-clip-text text-transparent">
                                     LearnVault AI
                                 </h1>
@@ -93,20 +187,47 @@ function Chat({topics,setTopics}){
                                 </p>
                             </div>
                         ):(
-                            <div className="flex-1 overflow-y-auto p-4 w-full">
-                                {topics?.map((topic,index)=>(
-                                    <div key={index}
-                                    className="
-                                        max-w-[70%]
-                                        self-end
-                                        p-3
-                                        rounded-2xl
-                                        bg-purple-600
-                                        text-white
-                                        " onClick={()=>navigate(`/topics/${topic.name}`)}>
-                                        {topic.name}
-                                    </div>
-                                ))}
+                            <div className="flex-1
+                                min-h-0
+                                overflow-y-auto
+                                p-4
+                                w-full
+                                flex
+                                flex-col
+                                gap-4">
+                                {
+                                    currentConversation?.chats?.map(
+                                        (chat,index)=>(
+
+                                            <div
+                                                key={index}
+                                                className={`
+                                                flex mb-4
+                                                ${
+                                                    chat.sender==="user"
+                                                    ?"justify-end"
+                                                    :"justify-start"
+                                                }
+                                                `}
+                                            >
+                                                <div
+                                                    className={`
+                                                    p-3
+                                                    rounded-2xl
+                                                    max-w-[70%]
+                                                    ${
+                                                        chat.sender==="user"
+                                                        ?"bg-purple-600 text-white"
+                                                        :"bg-slate-800 text-gray-200"
+                                                    }
+                                                    `}
+                                                >
+                                                    {chat.text}
+                                                </div>
+                                            </div>
+
+                                    ))
+                                }
                             </div>
                         )}
                     </div>

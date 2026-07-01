@@ -3,14 +3,13 @@ import { IoSettingsOutline,IoCloseOutline,IoSend } from 'react-icons/io5';
 import { useState } from "react";
 import { BsPinAngleFill, BsJournalText } from 'react-icons/bs';
 import { useNavigate } from "react-router-dom";
-function Panel({setIsNewChat,setInput}){
+function Panel({setIsNewChat,setInput,setCurrentConversationId,pinnedChats,notes}){
     const [showPanel,setShowPanel]=useState(false);
-    const pinnedChats=[];
-    const notes=[];
     const [activeTab,setActiveTab]=useState("pinned");
     const navigate=useNavigate();
     const handleNewChat=()=>{
         setIsNewChat?.(true);
+        setCurrentConversationId?.(null);
         setInput?.("");
         navigate("/");
     }
