@@ -16,6 +16,15 @@ function App() {
                     topics={topics}
                 />
                 }/>
+                <Route
+                    path="/topic/:name/:conversationId"
+                    element={
+                        <TopicPage
+                            topics={topics}
+                            setTopics={setTopics}
+                        />
+                    }
+                />
             </Routes>
         </BrowserRouter>
     )
