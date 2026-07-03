@@ -4,7 +4,7 @@ import { useState } from "react";
 import { BsPinAngleFill, BsJournalText } from 'react-icons/bs';
 import { useNavigate } from "react-router-dom";
 import Panel from "./Panel";
-function Chat({topics,setTopics,selectedConversation,setSelectedConversation}){
+function Chat({topics,setTopics,pinnedChats,notes}){
     const detectTopic=(text)=>{
 
         text=text.toLowerCase();
@@ -39,8 +39,7 @@ function Chat({topics,setTopics,selectedConversation,setSelectedConversation}){
         return "general";
     }
     const navigate=useNavigate();
-    const [pinnedChats,setPinnedChats]=useState([]);
-    const [notes,setNotes]=useState([]);
+    
     const [input,setInput] = useState("");
     const [currentConversationId,setCurrentConversationId]=useState(null);
     const[isNewChat,setIsNewChat]=useState(true);

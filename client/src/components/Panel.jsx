@@ -65,10 +65,10 @@ function Panel({setIsNewChat,setInput,setCurrentConversationId,pinnedChats,notes
                             </div>
                             <div className="mt-4 flex-1 overflow-y-auto pr-2">{
                                 activeTab==="pinned"?(
-                                    pinnedChats.length>0?(
+                                    pinnedChats?.length>0?(
                                         <div>
                                             {pinnedChats.map((chat,index)=>(
-                                                <div key={index} className="p-3 rounded-xl bg-slate-800 text-gray-200 mb-2">{chat}</div>
+                                                <div key={index} className="p-3 rounded-xl bg-slate-800 text-gray-200 mb-2">{chat.title}</div>
                                             ))}
                                         </div>
                                     ):(
@@ -78,10 +78,10 @@ function Panel({setIsNewChat,setInput,setCurrentConversationId,pinnedChats,notes
                                             </p>
                                         </div>
                                     )):(
-                                        notes.length>0?(
+                                        notes?.length>0?(
                                             <div>
                                                 {notes.map((note,index)=>(
-                                                    <div key={index} className="p-3 rounded-xl bg-slate-800 text-gray-200 mb-2">{note}</div>
+                                                    <div key={index} className="p-3 rounded-xl bg-slate-800 text-gray-200 mb-2">{note.title}</div>
                                                 ))}
                                             </div>
                                         ):(

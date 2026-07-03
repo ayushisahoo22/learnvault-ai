@@ -5,12 +5,43 @@ import { useParams,useNavigate } from "react-router-dom"
 import {IoSend } from 'react-icons/io5'
 import Chat from "../components/Chat";
 import { useState } from "react";
-function TopicPage({topics,setTopics}){
+import { BsPinAngleFill, BsJournalText } from 'react-icons/bs';
+import { MdDeleteOutline } from "react-icons/md";
+
+function TopicPage({topics,setTopics,pinnedChats,setPinnedChats,notes,setNotes}){
     const {name,conversationId}=useParams();
     const navigate=useNavigate();
     const [input,setInput]=useState("");
     const selectedTopic= topics.find(topic=>topic.name === name);
     const selectedConversation=selectedTopic?.conversations?.find(conversation=>conversation.id===Number(conversationId));
+    
+    const handlePin=(conversation)=>{
+        setPinnedChats(prev=>[
+            ...prev,
+            conversation
+        ])
+    }
+    const handleNotes=(conversation)=>{
+        setNotes(prev=>[
+            ...prev,
+            conversation
+        ])
+    }
+
+    const handleDelete=(conversationId)=>{
+        const confirmDelete=window.confirm("Do you want to delete this chat?");
+        if(!confirmDelete) return;
+        setTopics(prev=>
+            prev.map(topic=> 
+                topic.name===name?{
+                    ...topic,
+                    conversations:
+                    topic.conversations.filter(conversation=>conversation.id!==conversationId)
+                }:topic
+            )
+        )
+    }
+
     const handleContinueChat=()=>{
         if(!input.trim()) return;
         const userMessage={
@@ -51,7 +82,7 @@ function TopicPage({topics,setTopics}){
 
             <Sidebar topics={topics}/>
             <div className="flex-1 p-6 flex flex-col h-screen overflow-hidden">
-                <Panel/>
+                <Panel pinnedChats={pinnedChats} notes={notes}/>
                 <div className="mt-10">
                     <h1 className="
                     text-4xl
@@ -82,24 +113,71 @@ function TopicPage({topics,setTopics}){
                                 selectedTopic?.conversations?.map(
                                     (conversation)=>(
                                     <div
-                                        key={conversation.id}
-                                        onClick={()=>
-                                            navigate(
-                                            `/topic/${name}/${conversation.id}`
-                                            )
-                                        }
-                                        className="
+                                        key={conversation.id}className="
                                         p-4
                                         rounded-xl
                                         bg-slate-800
                                         hover:bg-slate-700
                                         cursor-pointer
                                         text-white
+                                        group
+                                        flex
+                                        justify-between
+                                        items-center
                                         "
                                     >
-                                        {conversation.title}
-                                    </div>
+                                        <span onClick={()=>navigate(`/topic/${name}/${conversation.id}`)}>
+                                            {conversation.title}
+                                        </span>
+                                        <div className="flex gap-4 opacity-0 group-hover:opacity-100 transitiona-all">
+                                            <button
+                                                title="Pin Chat"
+                                                onClick={(e)=>{
+                                                    e.stopPropagation();
+                                                    handlePin(conversation);
+                                                }}
+                                                >
+                                                    <BsPinAngleFill
+                                                    className="
+                                                    text-purple-400
+                                                    hover:text-purple-300
+                                                    "
+                                                    />
+                                                </button>
 
+                                                <button
+                                                title="Generate Notes"
+                                                onClick={(e)=>{
+                                                    e.stopPropagation();
+                                                    handleNotes(conversation);
+                                                }}
+                                                >
+                                                    <BsJournalText
+                                                    className="
+                                                    text-cyan-400
+                                                    hover:text-cyan-300
+                                                    "
+                                                    />
+                                                </button>
+                                                <button
+                                                    title="Delete Chat"
+                                                    onClick={(e)=>{
+                                                        e.stopPropagation();
+                                                        handleDelete(
+                                                            conversation.id
+                                                        );
+                                                    }}
+                                                >
+                                                    <MdDeleteOutline
+                                                        size={18}
+                                                        className="
+                                                        text-red-400
+                                                        hover:text-red-300
+                                                        "
+                                                    />
+                                                </button>
+                                        </div>
+                                    </div>
                                 ))
                             }
                         </div>
