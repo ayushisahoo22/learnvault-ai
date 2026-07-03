@@ -3,7 +3,9 @@ import { IoSettingsOutline,IoCloseOutline,IoSend } from 'react-icons/io5';
 import { useState } from "react";
 import { BsPinAngleFill, BsJournalText } from 'react-icons/bs';
 import { useNavigate } from "react-router-dom";
-function Panel({setIsNewChat,setInput,setCurrentConversationId,pinnedChats,notes}){
+import { MdDeleteOutline } from "react-icons/md";
+
+function Panel({setIsNewChat,setInput,setCurrentConversationId,pinnedChats,notes,setPinnedChats,setNotes}){
     const [showPanel,setShowPanel]=useState(false);
     const [activeTab,setActiveTab]=useState("pinned");
     const navigate=useNavigate();
@@ -12,6 +14,20 @@ function Panel({setIsNewChat,setInput,setCurrentConversationId,pinnedChats,notes
         setCurrentConversationId?.(null);
         setInput?.("");
         navigate("/");
+    }
+    const handlePin=(conversation)=>{
+        setPinnedChats(prev=>
+            prev.filter(chat=>
+                chat.id!==conversation.id
+            )
+        )
+    }
+    const handleDelete=(conversationId)=>{
+        setNotes(prev=>
+            prev.filter(chat=>
+                chat.id!==conversationId
+            )
+        )
     }
     return(
         <>
@@ -68,8 +84,25 @@ function Panel({setIsNewChat,setInput,setCurrentConversationId,pinnedChats,notes
                                     pinnedChats?.length>0?(
                                         <div>
                                             {pinnedChats.map((chat,index)=>(
-                                                <div key={index} className="p-3 rounded-xl bg-slate-800 text-gray-200 mb-2">{chat.title}</div>
+                                                <div key={index} className=" flex justify-between p-3 rounded-xl bg-slate-800 text-gray-200 mb-2">
+                                                    {chat.title}
+                                                    <button
+                                                    title="Unpin Chat"
+                                                    onClick={(e)=>{
+                                                        e.stopPropagation();
+                                                        handlePin(chat);
+                                                    }}
+                                                    >
+                                                        <BsPinAngleFill
+                                                        className="
+                                                        text-purple-400
+                                                        hover:text-purple-300
+                                                        "
+                                                        />
+                                                    </button>
+                                                </div>
                                             ))}
+                                            
                                         </div>
                                     ):(
                                         <div className="h-full flex items-center justify-center">
@@ -81,7 +114,26 @@ function Panel({setIsNewChat,setInput,setCurrentConversationId,pinnedChats,notes
                                         notes?.length>0?(
                                             <div>
                                                 {notes.map((note,index)=>(
-                                                    <div key={index} className="p-3 rounded-xl bg-slate-800 text-gray-200 mb-2">{note.title}</div>
+                                                    <div key={index} className=" flex justify-between p-3 rounded-xl bg-slate-800 text-gray-200 mb-2">
+                                                        {note.title}
+                                                        <button
+                                                            title="Delete Notes"
+                                                            onClick={(e)=>{
+                                                                e.stopPropagation();
+                                                                handleDelete(
+                                                                    note.id
+                                                                );
+                                                            }}
+                                                        >
+                                                            <MdDeleteOutline
+                                                                size={18}
+                                                                className="
+                                                                text-red-400
+                                                                hover:text-red-300
+                                                                "
+                                                            />
+                                                        </button>
+                                                    </div>
                                                 ))}
                                             </div>
                                         ):(

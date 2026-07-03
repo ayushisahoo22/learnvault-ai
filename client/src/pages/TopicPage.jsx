@@ -16,12 +16,16 @@ function TopicPage({topics,setTopics,pinnedChats,setPinnedChats,notes,setNotes})
     const selectedConversation=selectedTopic?.conversations?.find(conversation=>conversation.id===Number(conversationId));
     
     const handlePin=(conversation)=>{
+        const alreadyPinned= pinnedChats.find(chat=>chat.id===conversation.id)
+        if(alreadyPinned) return;
         setPinnedChats(prev=>[
             ...prev,
             conversation
         ])
     }
     const handleNotes=(conversation)=>{
+        const alreadyNoted= notes.find(chat=>chat.id===conversation.id)
+        if(alreadyNoted) return;
         setNotes(prev=>[
             ...prev,
             conversation
@@ -82,7 +86,7 @@ function TopicPage({topics,setTopics,pinnedChats,setPinnedChats,notes,setNotes})
 
             <Sidebar topics={topics}/>
             <div className="flex-1 p-6 flex flex-col h-screen overflow-hidden">
-                <Panel pinnedChats={pinnedChats} notes={notes}/>
+                <Panel pinnedChats={pinnedChats} notes={notes} setPinnedChats={setPinnedChats} setNotes={setNotes}/>
                 <div className="mt-10">
                     <h1 className="
                     text-4xl

@@ -4,7 +4,7 @@ import { useState } from "react";
 import { BsPinAngleFill, BsJournalText } from 'react-icons/bs';
 import { useNavigate } from "react-router-dom";
 import Panel from "./Panel";
-function Chat({topics,setTopics,pinnedChats,notes}){
+function Chat({topics,setTopics,pinnedChats,notes,setPinnedChats,setNotes}){
     const detectTopic=(text)=>{
 
         text=text.toLowerCase();
@@ -166,7 +166,8 @@ function Chat({topics,setTopics,pinnedChats,notes}){
     return(
         <>
             <div className="flex-1 flex flex-col bg-slate-950 p-6 h-full overflow-hidden">
-                <Panel setIsNewChat={setIsNewChat} setInput={setInput} setCurrentConversationId={setCurrentConversationId} pinnedChats={pinnedChats} notes={notes}/>
+                <Panel setIsNewChat={setIsNewChat} setInput={setInput} setCurrentConversationId={setCurrentConversationId} pinnedChats={pinnedChats} notes={notes}
+                setPinnedChats={setPinnedChats} setNotes={setNotes}/>
                     <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
                         { isNewChat || topics?.length===0?(
                             <div className="flex-1
