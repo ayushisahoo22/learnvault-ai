@@ -8,7 +8,7 @@ import { useState } from "react";
 import { BsPinAngleFill, BsJournalText } from 'react-icons/bs';
 import { MdDeleteOutline } from "react-icons/md";
 
-function TopicPage({topics,setTopics,pinnedChats,setPinnedChats,notes,setNotes,darkMode,setDarkMode}){
+function TopicPage({topics,setTopics,pinnedChats,setPinnedChats,notes,setNotes,darkMode,setDarkMode,search,setSearch}){
     const {name,conversationId}=useParams();
     const navigate=useNavigate();
     const [input,setInput]=useState("");
@@ -86,7 +86,8 @@ function TopicPage({topics,setTopics,pinnedChats,setPinnedChats,notes,setNotes,d
 
             <Sidebar topics={topics} darkMode={darkMode} setDarkMode={setDarkMode}/>
             <div className="flex-1 p-6 flex flex-col h-screen overflow-hidden">
-                <Panel pinnedChats={pinnedChats} notes={notes} setPinnedChats={setPinnedChats} setNotes={setNotes} darkMode={darkMode} setDarkMode={setDarkMode}/>
+                <Panel pinnedChats={pinnedChats} notes={notes} setPinnedChats={setPinnedChats} setNotes={setNotes} darkMode={darkMode} setDarkMode={setDarkMode}
+                search={search} setSearch={setSearch} topics={topics}/>
                 <div className="mt-10">
                     <h1 className="
                     text-4xl

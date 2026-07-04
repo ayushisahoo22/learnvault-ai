@@ -7,6 +7,7 @@ function App() {
     const [pinnedChats,setPinnedChats]=useState([]);
     const [notes,setNotes]=useState([]);
     const [darkMode,setDarkMode]=useState(true);
+    const[search,setSearch]=useState("");
     return(
         <div className={
             darkMode
@@ -24,6 +25,8 @@ function App() {
                         setNotes={setNotes}
                         darkMode={darkMode}
                         setDarkMode={setDarkMode}
+                        search={search}
+                        setSearch={setSearch}
                     />
                 }/>
                     <Route path="/topic/:name" element={<TopicPage
@@ -35,6 +38,8 @@ function App() {
                         setNotes={setNotes}
                         darkMode={darkMode}
                         setDarkMode={setDarkMode}
+                        search={search}
+                        setSearch={setSearch}
                     />
                     }/>
                     <Route
@@ -45,6 +50,8 @@ function App() {
                                 setTopics={setTopics}
                                 darkMode={darkMode}
                                 setDarkMode={setDarkMode}
+                                search={search}
+                                setSearch={setSearch}
                             />
                         }
                     />

@@ -5,10 +5,26 @@ import { BsPinAngleFill, BsJournalText } from 'react-icons/bs';
 import { useNavigate } from "react-router-dom";
 import { MdDeleteOutline } from "react-icons/md";
 
-function Panel({setIsNewChat,setInput,setCurrentConversationId,pinnedChats,notes,setPinnedChats,setNotes,setDarkMode,darkMode}){
+function Panel({setIsNewChat,setInput,setCurrentConversationId,pinnedChats,notes,setPinnedChats,setNotes,setDarkMode,darkMode,topics,search,setSearch}){
     const [showPanel,setShowPanel]=useState(false);
     const [activeTab,setActiveTab]=useState("pinned");
     const navigate=useNavigate();
+    const searchResults=topics?.flatMap(topic=>
+        topic.conversations.filter(conversation=>
+            conversation.title.toLowerCase()
+            .includes(search.toLowerCase())
+
+            ||
+            conversation.chats.some(chat=>
+                chat.text.toLowerCase()
+                .includes(search.toLowerCase())
+            )
+        ).map(conversation=>({
+            ...conversation,
+            topicName:topic.name
+        }))
+    )
+
     const handleNewChat=()=>{
         setIsNewChat?.(true);
         setCurrentConversationId?.(null);
@@ -35,7 +51,46 @@ function Panel({setIsNewChat,setInput,setCurrentConversationId,pinnedChats,notes
                 <div className="flex items-center gap-4">
                     <div className={`flex items-center gap-2 px-4 py-2 flex-1 rounded-xl bg-slate-900 border border-purple-500/20 ${darkMode?"bg-slate-900":"bg-white"}`}>
                         <FaSearch className="text-gray-400"/>
-                        <input type="text" placeholder="Search Topics..." className={`w-full bg-transparent outline-none ${darkMode?"text-white placeholder-gray-500":"text-black placeholder-gray-400"}`}/>
+                        <input type="text" placeholder="Search Topics..." onChange={(e)=>setSearch(e.target.value)} value={search} className={`w-full bg-transparent outline-none ${darkMode?"text-white placeholder-gray-500":"text-black placeholder-gray-400"}`}/>
+                        {
+                            search && (<div className={`
+                            absolute
+                            top-14
+                            left-0
+                            w-full
+                            ${darkMode?"bg-slate-900":"bg-white"}
+                            rounded-xl
+                            p-2
+                            z-50
+                            max-h-60
+                            overflow-y-auto
+                            `}>
+                            {
+                            searchResults?.length>0 ?
+                            searchResults.map(conversation=>(
+                                <div
+                                key={conversation.id}
+                                onClick={()=>{
+                                    navigate(`/topic/${conversation.topicName}/${conversation.id}`);
+                                    setSearch("");
+                                }}
+                                className={`
+                                p-3
+                                rounded-lg
+                                hover:bg-purple-500/20
+                                cursor-pointer
+                                ${darkMode?"text-white":"text-black"}
+                                `}>
+                                {conversation.title}
+                                </div>
+                            ))
+                            :
+                            <p className={`text-gray-450 p-3`}>
+                                No results found
+                            </p>
+                            }
+                            </div>
+                            )}
                     </div>
                     <button className="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white shrink-0" onClick={handleNewChat}>+ New Chat</button>
                     <button className="p-2 rounded-lg hover:bg-purple-500/20 text-purple-300 shrink-0" onClick={()=>setShowPanel(!showPanel)}>
