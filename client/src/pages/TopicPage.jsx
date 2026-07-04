@@ -8,7 +8,7 @@ import { useState } from "react";
 import { BsPinAngleFill, BsJournalText } from 'react-icons/bs';
 import { MdDeleteOutline } from "react-icons/md";
 
-function TopicPage({topics,setTopics,pinnedChats,setPinnedChats,notes,setNotes}){
+function TopicPage({topics,setTopics,pinnedChats,setPinnedChats,notes,setNotes,darkMode,setDarkMode}){
     const {name,conversationId}=useParams();
     const navigate=useNavigate();
     const [input,setInput]=useState("");
@@ -82,11 +82,11 @@ function TopicPage({topics,setTopics,pinnedChats,setPinnedChats,notes,setNotes})
         setInput("");
     }
     return (
-        <div className="flex min-h-screen bg-slate-950">
+        <div className={`flex min-h-screen ${darkMode?"bg-slate-950":"bg-gray-100"}`}>
 
-            <Sidebar topics={topics}/>
+            <Sidebar topics={topics} darkMode={darkMode} setDarkMode={setDarkMode}/>
             <div className="flex-1 p-6 flex flex-col h-screen overflow-hidden">
-                <Panel pinnedChats={pinnedChats} notes={notes} setPinnedChats={setPinnedChats} setNotes={setNotes}/>
+                <Panel pinnedChats={pinnedChats} notes={notes} setPinnedChats={setPinnedChats} setNotes={setNotes} darkMode={darkMode} setDarkMode={setDarkMode}/>
                 <div className="mt-10">
                     <h1 className="
                     text-4xl
@@ -117,18 +117,21 @@ function TopicPage({topics,setTopics,pinnedChats,setPinnedChats,notes,setNotes})
                                 selectedTopic?.conversations?.map(
                                     (conversation)=>(
                                     <div
-                                        key={conversation.id}className="
-                                        p-4
-                                        rounded-xl
-                                        bg-slate-800
-                                        hover:bg-slate-700
-                                        cursor-pointer
-                                        text-white
-                                        group
-                                        flex
-                                        justify-between
-                                        items-center
-                                        "
+                                        key={conversation.id}className={`
+                                            p-4
+                                            rounded-xl
+                                            cursor-pointer
+                                            group
+                                            flex
+                                            justify-between
+                                            items-center
+
+                                            ${
+                                            darkMode
+                                            ? "bg-slate-800 hover:bg-slate-700 text-white"
+                                            : "bg-white hover:bg-gray-200 text-black border"
+                                            }
+                                        `}
                                     >
                                         <span onClick={()=>navigate(`/topic/${name}/${conversation.id}`)}>
                                             {conversation.title}
@@ -230,7 +233,10 @@ function TopicPage({topics,setTopics,pinnedChats,setPinnedChats,notes,setNotes})
                                                 ${
                                                     chat.sender==="user"
                                                     ?"bg-purple-600 text-white"
-                                                    :"bg-slate-800 text-gray-200"
+                                                    :
+                                                    darkMode
+                                                    ?"bg-slate-800 text-gray-200"
+                                                    :"bg-white text-black border"
                                                 }
                                                 `}
                                             >
@@ -240,8 +246,8 @@ function TopicPage({topics,setTopics,pinnedChats,setPinnedChats,notes,setNotes})
                                     ))
                                 }
                                 </div>
-                                <div className="flex justify-center pt-4 border-t bg-slate-950 z-10">
-                                    <div className="flex items-center gap-3 p-3 rounded-2xl w-full md:w-[80%] lg:w-[65%] bg-slate-900 border border-purple-500/20 shadow-lg shadow-purple-500/5">
+                                <div className={`flex justify-center pt-4 z-10 ${darkMode?"bg-slate-950":"bg-gray-100"}`}>
+                                    <div className={`flex items-center gap-3 p-3 rounded-2xl w-full md:w-[80%] lg:w-[65%] border border-purple-500/20 shadow-lg shadow-purple-500/5 ${darkMode?"bg-slate-950":"bg-white"}`}>
                                         <input type="text" value={input} placeholder="Ask anything" 
                                             onChange={(e)=>setInput(e.target.value)}
                                             onKeyDown={(e)=>{
@@ -249,7 +255,7 @@ function TopicPage({topics,setTopics,pinnedChats,setPinnedChats,notes,setNotes})
                                                     handleContinueChat();
                                                 }
                                             }}
-                                            className="flex-1 bg-transparent outline-none text-white placeholder-gray-500" />
+                                            className={`flex-1 bg-transparent outline-none placeholder-gray-500 ${darkMode?"text-white":"text-black"}`} />
                                         <button onClick={handleContinueChat} className="p-3 rounded-xl bg-purple-600 hover:bg-purple-700 text-white">
                                             <IoSend/>
                                         </button>

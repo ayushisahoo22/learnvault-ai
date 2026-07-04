@@ -4,7 +4,7 @@ import { useState } from "react";
 import { BsPinAngleFill, BsJournalText } from 'react-icons/bs';
 import { useNavigate } from "react-router-dom";
 import Panel from "./Panel";
-function Chat({topics,setTopics,pinnedChats,notes,setPinnedChats,setNotes}){
+function Chat({topics,setTopics,pinnedChats,notes,setPinnedChats,setNotes,darkMode,setDarkMode}){
     const detectTopic=(text)=>{
 
         text=text.toLowerCase();
@@ -165,9 +165,9 @@ function Chat({topics,setTopics,pinnedChats,notes,setPinnedChats,setNotes}){
     }
     return(
         <>
-            <div className="flex-1 flex flex-col bg-slate-950 p-6 h-full overflow-hidden">
+            <div className={`flex-1 flex flex-col ${darkMode?"bg-slate-950":"bg-gray-100"} transition-all duration-300 p-6 h-full overflow-hidden`}>
                 <Panel setIsNewChat={setIsNewChat} setInput={setInput} setCurrentConversationId={setCurrentConversationId} pinnedChats={pinnedChats} notes={notes}
-                setPinnedChats={setPinnedChats} setNotes={setNotes}/>
+                setPinnedChats={setPinnedChats} setNotes={setNotes} setDarkMode={setDarkMode} darkMode={darkMode}/>
                     <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
                         { isNewChat || topics?.length===0?(
                             <div className="flex-1
@@ -182,8 +182,8 @@ function Chat({topics,setTopics,pinnedChats,notes,setPinnedChats,setNotes}){
                                 <h1 className="text-3xl md:text-5xl font-bold bg-gradient-to-r from-purple-400 via-fuchsia-300 to-cyan-300 bg-clip-text text-transparent">
                                     LearnVault AI
                                 </h1>
-                                <p className="mt-5 text-xl md:text-3xl font-semibold text-white">What do you want to learn today?</p>
-                                <p className="mt-3 text-gray-400 max-w-xl mx-auto">
+                                <p className={`mt-5 text-xl md:text-3xl font-semibold ${darkMode?"text-white":"text-black"}`}>What do you want to learn today?</p>
+                                <p className={`mt-3 ${darkMode?"text-gray-400":"text-gray-600"} max-w-xl mx-auto`}>
                                     Explore concepts,generate notes,and build understanding with AI.
                                 </p>
                             </div>
@@ -219,7 +219,7 @@ function Chat({topics,setTopics,pinnedChats,notes,setPinnedChats,setNotes}){
                                                     ${
                                                         chat.sender==="user"
                                                         ?"bg-purple-600 text-white"
-                                                        :"bg-slate-800 text-gray-200"
+                                                        :darkMode?"bg-slate-800 text-gray-200":"bg-white text-black border"
                                                     }
                                                     `}
                                                 >
@@ -234,7 +234,7 @@ function Chat({topics,setTopics,pinnedChats,notes,setPinnedChats,setNotes}){
                     </div>
 
                 <div className="flex justify-center pb-4">
-                    <div className="flex items-center gap-3 p-3 rounded-2xl w-full md:w-[80%] lg:w-[65%] bg-slate-900 border border-purple-500/20 shadow-lg shadow-purple-500/5">
+                    <div className={`flex items-center gap-3 p-3 rounded-2xl w-full md:w-[80%] lg:w-[65%] border border-purple-500/20 shadow-lg shadow-purple-500/5 ${darkMode?"bg-slate-800":"bg-white"}`}>
                         <input type="text" value={input} placeholder="Ask anything" 
                             onChange={(e)=>setInput(e.target.value)}
                             onKeyDown={(e)=>{
@@ -242,7 +242,7 @@ function Chat({topics,setTopics,pinnedChats,notes,setPinnedChats,setNotes}){
                                     handleSend();
                                 }
                             }}
-                            className="flex-1 bg-transparent outline-none text-white placeholder-gray-500" />
+                            className={`flex-1 bg-transparent outline-none placeholder-gray-500 ${darkMode?"text-white":"text-black"}`}/>
                         <button onClick={handleSend} className="p-3 rounded-xl bg-purple-600 hover:bg-purple-700 text-white">
                             <IoSend/>
                         </button>

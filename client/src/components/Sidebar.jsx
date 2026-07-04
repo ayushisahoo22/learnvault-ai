@@ -6,18 +6,18 @@ import { MdDarkMode } from "react-icons/md";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-function Sidebar({topics}){
+function Sidebar({topics,darkMode,setDarkMode}){
     const [showMenu,setShowMenu] = useState(false);
     const navigate=useNavigate();
     return(
-        <div className="flex flex-col h-screen w-1/4 md:w-64 lg:w-72 bg-gradient-to-b from-slate-950 to-indigo-950 p-5">
+        <div className={`flex flex-col h-screen w-1/4 md:w-64 lg:w-72 p-5 ${darkMode? "bg-gradient-to-b from-slate-950 to-indigo-950": "bg-gradient-to-b from-gray-100 to-gray-200"}`}>
             <div className="flex gap-3 items-center h-10">
                 <div className="w-10 h-10 rounded-xl bg-purple-600 flex items-center justify-center">
                     <PiBrainBold className="text-white text-xl" />
                 </div>
                 <div className="hidden md:block">
                     <h5 className="text-l font-bold bg-gradient-to-r from-purple-400 to-indigo-300 bg-clip-text text-transparent">LearnVault AI</h5>
-                    <p className="text-xs text-gray-300">AI Learning Workspace</p>
+                    <p className={`text-xs ${darkMode?"text-gray-300":"text-gray-600"}`}>AI Learning Workspace</p>
                 </div>
             </div>
 
@@ -37,18 +37,19 @@ function Sidebar({topics}){
                                 {topics.map((topic,index)=>(
                                     <div
                                         key={index}
-                                        className="
+                                        className={`
                                         p-1
                                         rounded-md
                                         hover:bg-purple-500/20
                                         cursor-pointer
-                                        text-gray-300"
+                                        ${darkMode ? "text-gray-300" : "text-black"}
+                                        `}
                                         onClick={()=>navigate(`/topic/${topic.name}`)}
                                     >{topic.name}</div>
                                 ))}
                             </div>
                         ) : (
-                            <p className="mt-2 px-2 text-md text-gray-500">
+                            <p className={`mt-2 px-2 text-md ${darkMode ? "text-gray-500" : "text-gray-700"}`}>
                                 Start a conversation to generate topics
                             </p>
                         )
@@ -62,38 +63,43 @@ function Sidebar({topics}){
             <div className="relative">
                  <div className="flex items-center gap-2 p-2 rounded-xl cursor-pointer hover:bg-white/10 transition-all">
                     <FaUserCircle onClick={()=>setShowMenu(!showMenu)} className="text-2xl text-purple-300"/>
-                    <h4 className="hidden md:block text-sm font-semibold text-white">Ayushi</h4>  
+                    <h4 className={`hidden md:block text-sm font-semibold ${darkMode ? "text-white" : "text-black"}`}>Ayushi</h4>  
                 </div>
                 {
-                    showMenu && (<div className="absolute bottom-16 left-0 w-max rounded-xl bg-slate-900 border border-purple-500/30 p-2 shadow-lg shadow-purple-500/20 backdrop-blur-md flex-shrink-0">
-                        <div className="
+                    showMenu && (<div className={`absolute bottom-16 left-0 w-max rounded-xl border border-purple-500/30 p-2 shadow-lg shadow-purple-500/20 backdrop-blur-md flex-shrink-0 ${darkMode ? "bg-slate-900" : "bg-white"}`}>
+                        <div
+                            onClick={()=>setDarkMode(prev=>!prev)}
+                            className={`
                             flex
                             items-center
                             gap-2
                             p-2
-                            text-gray-100
-                            hover:bg-purple-500/20
-                            hover:text-purple-200
                             rounded-lg
                             cursor-pointer
                             whitespace-nowrap
-                            ">
-                                <MdDarkMode/>
-                                <span>Change Theme</span>
+                            ${
+                            darkMode
+                            ? "text-gray-100 hover:bg-purple-500/20 hover:text-purple-200"
+                            : "text-black hover:bg-gray-200"
+                            }`}>
+                            <MdDarkMode/>
+                            <span>
+                                {darkMode ? "Light Mode" : "Dark Mode"}
+                            </span>
                         </div>
 
-                        <div className="
+                        <div className={`
                             flex
                             items-center
                             gap-2
                             p-2
-                            text-gray-100
                             hover:bg-red-500/20
                             hover:text-red-300
                             rounded-lg
                             cursor-pointer
                             whitespace-nowrap
-                            ">
+                            ${darkMode?"text-gray-100":"text-black"}
+                            `}>
                                 <IoLogOutOutline/>
                                 <span>Logout</span>
                         </div>

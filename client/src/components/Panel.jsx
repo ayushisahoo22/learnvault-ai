@@ -5,7 +5,7 @@ import { BsPinAngleFill, BsJournalText } from 'react-icons/bs';
 import { useNavigate } from "react-router-dom";
 import { MdDeleteOutline } from "react-icons/md";
 
-function Panel({setIsNewChat,setInput,setCurrentConversationId,pinnedChats,notes,setPinnedChats,setNotes}){
+function Panel({setIsNewChat,setInput,setCurrentConversationId,pinnedChats,notes,setPinnedChats,setNotes,setDarkMode,darkMode}){
     const [showPanel,setShowPanel]=useState(false);
     const [activeTab,setActiveTab]=useState("pinned");
     const navigate=useNavigate();
@@ -33,9 +33,9 @@ function Panel({setIsNewChat,setInput,setCurrentConversationId,pinnedChats,notes
         <>
             <div className="relative w-full">
                 <div className="flex items-center gap-4">
-                    <div className="flex items-center gap-2 px-4 py-2 flex-1 rounded-xl bg-slate-900 border border-purple-500/20">
+                    <div className={`flex items-center gap-2 px-4 py-2 flex-1 rounded-xl bg-slate-900 border border-purple-500/20 ${darkMode?"bg-slate-900":"bg-white"}`}>
                         <FaSearch className="text-gray-400"/>
-                        <input type="text" placeholder="Search Topics..." className="w-full bg-transparent outline-none text-white placeholder-gray-500"/>
+                        <input type="text" placeholder="Search Topics..." className={`w-full bg-transparent outline-none ${darkMode?"text-white placeholder-gray-500":"text-black placeholder-gray-400"}`}/>
                     </div>
                     <button className="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white shrink-0" onClick={handleNewChat}>+ New Chat</button>
                     <button className="p-2 rounded-lg hover:bg-purple-500/20 text-purple-300 shrink-0" onClick={()=>setShowPanel(!showPanel)}>
@@ -44,8 +44,8 @@ function Panel({setIsNewChat,setInput,setCurrentConversationId,pinnedChats,notes
                 </div>
 
                 {
-                    showPanel && (<div className="absolute top-0 right-0 h-screen w-full sm:w-80 bg-slate-900 border-l border-purple-500/20 shadow-2xl shadow-purple-500/10 p-5 z-50 flex flex-col">
-                            <div className="flex justify-between items-center border-b border-white/10 pb-4">
+                    showPanel && (<div className={`absolute top-0 right-0 h-screen w-full sm:w-80 border-l border-purple-500/20 shadow-2xl shadow-purple-500/10 p-5 z-50 flex flex-col ${darkMode?"bg-slate-900":"bg-gray-100"}`}>
+                            <div className={`flex justify-between items-center pb-4 ${darkMode ? "border-b border-white/10" : "border-b border-gray-300"}`}>
                                 <h2 className="text-lg font-semibold text-transparent bg-clip-text bg-gradient-to-r from-fuchsia-300 to-cyan-300">
                                     Workspace
                                 </h2>
@@ -58,9 +58,11 @@ function Panel({setIsNewChat,setInput,setCurrentConversationId,pinnedChats,notes
                                     flex items-center gap-2 px-4 py-2 rounded-xl
                                     transition-all
                                     ${
-                                        activeTab==="pinned"
+                                         activeTab==="pinned"
                                         ? "bg-purple-600/30 text-white"
-                                        : "bg-slate-800 text-gray-400"
+                                        : darkMode
+                                        ? "bg-slate-800 text-gray-400"
+                                        : "bg-white text-black border border-gray-300"
                                     }
                                     `}>
                                     <BsPinAngleFill/>
@@ -72,7 +74,9 @@ function Panel({setIsNewChat,setInput,setCurrentConversationId,pinnedChats,notes
                                     ${
                                         activeTab==="notes"
                                         ? "bg-purple-600/30 text-white"
-                                        : "bg-slate-800 text-gray-400"
+                                        : darkMode
+                                        ? "bg-slate-800 text-gray-400"
+                                        : "bg-white text-black border border-gray-300"
                                     }
                                     `}>
                                     <BsJournalText/>
@@ -84,7 +88,7 @@ function Panel({setIsNewChat,setInput,setCurrentConversationId,pinnedChats,notes
                                     pinnedChats?.length>0?(
                                         <div>
                                             {pinnedChats.map((chat,index)=>(
-                                                <div key={index} className=" flex justify-between p-3 rounded-xl bg-slate-800 text-gray-200 mb-2">
+                                                <div key={index} className={`flex justify-between p-3 rounded-xl mb-2 ${darkMode?"bg-slate-800 text-gray-200":"bg-white text-black border"}`}>
                                                     {chat.title}
                                                     <button
                                                     title="Unpin Chat"
@@ -114,7 +118,7 @@ function Panel({setIsNewChat,setInput,setCurrentConversationId,pinnedChats,notes
                                         notes?.length>0?(
                                             <div>
                                                 {notes.map((note,index)=>(
-                                                    <div key={index} className=" flex justify-between p-3 rounded-xl bg-slate-800 text-gray-200 mb-2">
+                                                    <div key={index} className={`flex justify-between p-3 rounded-xl mb-2 ${darkMode?"bg-slate-800 text-gray-200":"bg-white text-black border"}`}>
                                                         {note.title}
                                                         <button
                                                             title="Delete Notes"
