@@ -44,6 +44,11 @@ function TopicPage({topics,setTopics,pinnedChats,setPinnedChats,notes,setNotes,d
                 }:topic
             )
         )
+        setPinnedChats(prev=>
+            prev.filter(
+                chat=>chat.id!==conversationId
+            )
+        )
     }
 
     const handleContinueChat=()=>{
