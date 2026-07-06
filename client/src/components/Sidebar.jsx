@@ -9,6 +9,15 @@ import { useNavigate } from "react-router-dom";
 function Sidebar({topics,darkMode,setDarkMode}){
     const [showMenu,setShowMenu] = useState(false);
     const navigate=useNavigate();
+    const handleLogout=()=>{
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        navigate("/login");
+    }
+    const user=JSON.parse(
+        localStorage.getItem("user") || "{}"
+    );
+    console.log(user);
     return(
         <div className={`flex flex-col h-screen w-1/4 md:w-64 lg:w-72 p-5 ${darkMode? "bg-gradient-to-b from-slate-950 to-indigo-950": "bg-gradient-to-b from-gray-100 to-gray-200"}`}>
             <div className="flex gap-3 items-center h-10">
@@ -63,7 +72,9 @@ function Sidebar({topics,darkMode,setDarkMode}){
             <div className="relative">
                  <div className="flex items-center gap-2 p-2 rounded-xl cursor-pointer hover:bg-white/10 transition-all">
                     <FaUserCircle onClick={()=>setShowMenu(!showMenu)} className="text-2xl text-purple-300"/>
-                    <h4 className={`hidden md:block text-sm font-semibold ${darkMode ? "text-white" : "text-black"}`}>Ayushi</h4>  
+                    <h4 className={`hidden md:block text-sm font-semibold ${darkMode ? "text-white" : "text-black"}`}>
+                        {user.name||"User"}    
+                    </h4>  
                 </div>
                 {
                     showMenu && (<div className={`absolute bottom-16 left-0 w-max rounded-xl border border-purple-500/30 p-2 shadow-lg shadow-purple-500/20 backdrop-blur-md flex-shrink-0 ${darkMode ? "bg-slate-900" : "bg-white"}`}>
@@ -99,7 +110,7 @@ function Sidebar({topics,darkMode,setDarkMode}){
                             cursor-pointer
                             whitespace-nowrap
                             ${darkMode?"text-gray-100":"text-black"}
-                            `}>
+                            `} onClick={handleLogout}>
                                 <IoLogOutOutline/>
                                 <span>Logout</span>
                         </div>
