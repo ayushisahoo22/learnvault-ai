@@ -8,6 +8,9 @@ connectDB()
 app.use(cors());
 app.use(express.json());
 
+import router from "./routes/authRoute.js";
+app.use("/api/auth",router);
+
 app.get("/",(req,res)=>{
     res.send("Backend Running");
 })
