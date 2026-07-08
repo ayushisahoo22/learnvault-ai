@@ -1,6 +1,7 @@
 import express from "express"
 import registerUser from "../controllers/register.controller.js"
 import loginUser from "../controllers/login.controller.js";
+import verifyJWT from "../middleware/auth.middleware.js";
 
 const router = express.Router();
 router.post("/register", registerUser);
