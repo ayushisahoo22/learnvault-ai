@@ -1,5 +1,6 @@
 import { useState} from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios"
 
 function Register(){
     const navigate=useNavigate();
@@ -16,19 +17,26 @@ function Register(){
     }
      const handleRegister=async(e)=>{
         e.preventDefault();
-        const userData={
-            name:form.name,
-            email:form.email
-        };
-        localStorage.setItem(
-            "user",
-            JSON.stringify(userData)
-        );
-        navigate("/login");
+        try {
+            const response = await axios.post(
+                "http://localhost:3000/api/auth/register",
+                {
+                    name: form.name,
+                    email: form.email,
+                    password: form.password
+                }
+            );
+
+            alert(response.data.message);
+            navigate("/login");
+        }catch (error) {
+            console.log(error);
+            console.log(error.response);
+            alert(
+                error.response?.data?.message || "Registration Failed"
+            );
+        }
     }
-    console.log(
-    localStorage.getItem("user")
-);
     return(
         <div className="min-h-screen bg-slate-950 flex items-center justify-center">
             <div className="bg-slate-900 p-8 rounded-2xl w-[400px]">

@@ -1,20 +1,36 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-
+import axios from "axios"
 function Login(){
     const navigate=useNavigate();
     const [email,setEmail]=useState("");
     const [password,setPassword]=useState("");
-    const handleLogin=(e)=>{
+    const handleLogin=async(e)=>{
         e.preventDefault();
-        localStorage.setItem(
-            "token",
-            "dummyToken"
-        );
-        const user=JSON.parse(
-            localStorage.getItem("user")
-        );
-        navigate("/");
+        try {
+            const response = await axios.post(
+                "http://localhost:3000/api/auth/login",
+                {
+                    email,
+                    password
+                }
+            );
+            localStorage.setItem(
+                "token",
+                response.data.token
+            );
+            localStorage.setItem(
+                "user",
+                JSON.stringify(response.data.user)
+            );
+            navigate("/");
+        } catch (error) {
+            console.log(error);
+            console.log(error.response);
+            alert(
+                error.response?.data?.message || "Login Failed"
+            );
+        }
     }
     return(
         <div className="min-h-screen bg-slate-950 flex items-center justify-center">

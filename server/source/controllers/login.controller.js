@@ -26,7 +26,9 @@ const loginUser=async(req,res)=>{
             { expiresIn: "10d" }
         );
         res.status(201).json({
-            message:"Login successful"
+            message:"Login successful",
+            token,
+            user
         })
     } catch (error) {
         res.status(500).json({
