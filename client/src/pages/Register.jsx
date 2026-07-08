@@ -43,6 +43,7 @@ function Register(){
                     <input
                     type="text"
                     name="name"
+                    required
                     placeholder="Name"
                     onChange={handleChange}
                     className="p-3 rounded-lg bg-slate-800 text-white"
@@ -51,6 +52,7 @@ function Register(){
                     <input
                     type="email"
                     name="email"
+                    required
                     placeholder="Email"
                     onChange={handleChange}
                     className="p-3 rounded-lg bg-slate-800 text-white"
@@ -59,6 +61,7 @@ function Register(){
                     <input
                     type="password"
                     name="password"
+                    required
                     placeholder="Password"
                     onChange={handleChange}
                     className="p-3 rounded-lg bg-slate-800 text-white"

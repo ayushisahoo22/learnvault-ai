@@ -27,6 +27,7 @@ function Login(){
 
                     <input
                     type="email"
+                    required
                     placeholder="Email"
                     value={email}
                     onChange={(e)=>
@@ -39,6 +40,7 @@ function Login(){
 
                     <input
                     type="password"
+                    required
                     placeholder="Password"
                     value={password}
                     onChange={(e)=>
