@@ -11,6 +11,9 @@ app.use(express.json());
 import router from "./routes/authRoute.js";
 app.use("/api/auth",router);
 
+import chatRouter from "./routes/chat.routes.js";
+app.use("/api/chat",chatRouter);
+
 app.get("/",(req,res)=>{
     res.send("Backend Running");
 })

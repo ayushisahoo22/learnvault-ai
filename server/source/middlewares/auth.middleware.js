@@ -14,6 +14,7 @@ const verifyJWT = async(req, res, next) => {
             process.env.JWT_SECRET
         );
         req.user=decoded
+        next();
     }
     catch(error){
         res.status(400).json({

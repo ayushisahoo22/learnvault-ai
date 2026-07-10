@@ -2,10 +2,11 @@ import { Chat } from "../models/chat.model.js";
 
 // Create New Chat
 export const createChat = async (req, res) => {
+    console.log("Reached createChat");
     try {
         const { topic, title, chats } = req.body;
         const chat = await Chat.create({
-            user: req.user._id,
+            user: req.user.id,
             topic,
             title,
             chats
@@ -28,7 +29,7 @@ export const getChats = async (req, res) => {
 
     try {
         const chats = await Chat.find({
-            user: req.user._id
+            user: req.user.id
         }).sort({
             updatedAt: -1
         });
@@ -50,7 +51,7 @@ export const getSingleChat = async (req, res) => {
 
         const chat = await Chat.findOne({
             _id: req.params.id,
-            user: req.user._id
+            user: req.user.id
         });
 
         if (!chat) {
@@ -76,7 +77,7 @@ export const continueChat = async (req, res) => {
         const { userMessage, aiMessage } = req.body;
         const chat = await Chat.findOne({
             _id: req.params.id,
-            user: req.user._id
+            user: req.user.id
         });
         if (!chat) {
             return res.status(404).json({
@@ -107,7 +108,7 @@ export const deleteChat = async (req, res) => {
     try {
         const chat = await Chat.findOneAndDelete({
             _id: req.params.id,
-            user: req.user._id
+            user: req.user.id
         });
 
         if (!chat) {
