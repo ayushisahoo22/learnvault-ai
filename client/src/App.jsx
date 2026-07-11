@@ -5,12 +5,39 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { useState } from "react";
+import API from "./api/chatApi";
 function App() {
     const [topics,setTopics] = useState([]);
     const [pinnedChats,setPinnedChats]=useState([]);
     const [notes,setNotes]=useState([]);
     const [darkMode,setDarkMode]=useState(true);
     const[search,setSearch]=useState("");
+    const fetchChats = async () => {
+        try {
+            const response = await API.get("/chat");
+            const chats = response.data;
+            const groupedTopics = chats.reduce((acc, chat) => {
+                let topic = acc.find(t => t.name === chat.topic);
+                if (!topic) {
+                    topic = {
+                        name: chat.topic,
+                        conversations: []
+                    };
+
+                    acc.push(topic);
+                }
+                topic.conversations.push({
+                    id: chat._id,
+                    title: chat.title,
+                    chats: chat.chats
+                });
+                return acc;
+            }, []);
+            setTopics(groupedTopics);
+        } catch (error) {
+            console.log(error);
+        }
+    };
     return(
         <div className={
             darkMode
@@ -34,6 +61,7 @@ function App() {
                             setDarkMode={setDarkMode}
                             search={search}
                             setSearch={setSearch}
+                            fetchChats={fetchChats}
                         />
                     </ProtectedRoute>    
                 }/>
@@ -50,6 +78,7 @@ function App() {
                             setDarkMode={setDarkMode}
                             search={search}
                             setSearch={setSearch}
+                            fetchChats={fetchChats}
                             />
                         </ProtectedRoute>
                     }/>
@@ -64,6 +93,7 @@ function App() {
                                 setDarkMode={setDarkMode}
                                 search={search}
                                 setSearch={setSearch}
+                                fetchChats={fetchChats}
                             />
                             </ProtectedRoute>
                         }

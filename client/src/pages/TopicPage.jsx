@@ -4,11 +4,11 @@ import {FaSearch } from "react-icons/fa";
 import { useParams,useNavigate } from "react-router-dom"
 import {IoSend } from 'react-icons/io5'
 import Chat from "../components/Chat";
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import { BsPinAngleFill, BsJournalText } from 'react-icons/bs';
 import { MdDeleteOutline } from "react-icons/md";
-
-function TopicPage({topics,setTopics,pinnedChats,setPinnedChats,notes,setNotes,darkMode,setDarkMode,search,setSearch}){
+import API from "../api/chatApi";
+function TopicPage({topics,setTopics,pinnedChats,setPinnedChats,notes,setNotes,darkMode,setDarkMode,search,setSearch,fetchChats}){
     const {name,conversationId}=useParams();
     const navigate=useNavigate();
     const [input,setInput]=useState("");
@@ -16,6 +16,10 @@ function TopicPage({topics,setTopics,pinnedChats,setPinnedChats,notes,setNotes,d
     const selectedConversation = selectedTopic?.conversations?.find(
         conversation => conversation.id === conversationId
     );
+    useEffect(() => {
+        fetchChats();
+    }, []);
+    
     const handlePin=(conversation)=>{
         const alreadyPinned= pinnedChats.find(chat=>chat.id===conversation.id)
         if(alreadyPinned) return;
@@ -33,59 +37,43 @@ function TopicPage({topics,setTopics,pinnedChats,setPinnedChats,notes,setNotes,d
         ])
     }
 
-    const handleDelete=(conversationId)=>{
-        const confirmDelete=window.confirm("Do you want to delete this chat?");
-        if(!confirmDelete) return;
-        setTopics(prev=>
-            prev.map(topic=> 
-                topic.name===name?{
-                    ...topic,
-                    conversations:
-                    topic.conversations.filter(conversation=>conversation.id!==conversationId)
-                }:topic
-            )
-        )
-        setPinnedChats(prev=>
-            prev.filter(
-                chat=>chat.id!==conversationId
-            )
-        )
+    const handleDelete=async(conversationId)=>{
+        const confirmDelete = window.confirm(
+            "Do you want to delete this chat?"
+        );
+        if (!confirmDelete) return;
+        try {
+            await API.delete(`/chat/${conversationId}`);
+            setPinnedChats(prev =>
+                prev.filter(chat => chat.id !== conversationId)
+            );
+            await fetchChats();
+            navigate(`/topic/${name}`);
+        } catch (error) {
+            console.log(error);
+        }
     }
 
-    const handleContinueChat=()=>{
-        if(!input.trim()) return;
-        const userMessage={
-            sender:"user",
-            text:input
+    const handleContinueChat=async()=>{
+        if (!input.trim()) return;
+        const userMessage = {
+            sender: "user",
+            text: input
         };
-        const aiMessage={
-            sender:"ai",
-            text:`I am helping you learn about ${name}`
+        const aiMessage = {
+            sender: "ai",
+            text: `I am helping you learn about ${name}`
         };
-        setTopics(prev=>
-            prev.map(topic=>
-                topic.name===name
-                ?{
-                    ...topic,
-                    conversations:
-                    topic.conversations.map(
-                        conversation=>
-                        conversation.id===conversationId
-                        ?{
-                            ...conversation,
-                            chats:[
-                                ...conversation.chats,
-                                userMessage,
-                                aiMessage
-                            ]
-                        }
-                        :conversation
-                    )
-                }
-                :topic
-            )
-        );
-        setInput("");
+        try {
+            await API.patch(`/chat/${conversationId}`, {
+                userMessage,
+                aiMessage
+            });
+            setInput("");
+            await fetchChats();
+        } catch (error) {
+            console.log(error);
+        }
     }
     return (
         <div className={`flex min-h-screen ${darkMode?"bg-slate-950":"bg-gray-100"}`}>

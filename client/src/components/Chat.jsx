@@ -5,8 +5,7 @@ import { BsPinAngleFill, BsJournalText } from 'react-icons/bs';
 import { useNavigate } from "react-router-dom";
 import Panel from "./Panel";
 import API from "../api/chatApi";
-
-function Chat({topics,setTopics,pinnedChats,notes,setPinnedChats,setNotes,darkMode,setDarkMode,search,setSearch}){
+function Chat({topics,setTopics,pinnedChats,notes,setPinnedChats,setNotes,darkMode,setDarkMode,search,setSearch,fetchChats}){
     const detectTopic=(text)=>{
 
         text=text.toLowerCase();
@@ -54,31 +53,31 @@ function Chat({topics,setTopics,pinnedChats,notes,setPinnedChats,setNotes,darkMo
         conversation =>
         conversation.id===currentConversationId
     );
-    const fetchChats = async () => {
-        try {
-            const response = await API.get("/chat");
-            const chats = response.data;
-            const groupedTopics = chats.reduce((acc, chat) => {
-                let topic = acc.find(t => t.name === chat.topic);
-                if (!topic) {
-                    topic = {
-                        name: chat.topic,
-                        conversations: []
-                    };
-                    acc.push(topic);
-                }
-                topic.conversations.push({
-                    id: chat._id,
-                    title: chat.title,
-                    chats: chat.chats
-                });
-                return acc;
-            }, []);
-            setTopics(groupedTopics);
-        } catch (error) {
-            console.log(error);
-        }
-    };
+    // const fetchChats = async () => {
+    //     try {
+    //         const response = await API.get("/chat");
+    //         const chats = response.data;
+    //         const groupedTopics = chats.reduce((acc, chat) => {
+    //             let topic = acc.find(t => t.name === chat.topic);
+    //             if (!topic) {
+    //                 topic = {
+    //                     name: chat.topic,
+    //                     conversations: []
+    //                 };
+    //                 acc.push(topic);
+    //             }
+    //             topic.conversations.push({
+    //                 id: chat._id,
+    //                 title: chat.title,
+    //                 chats: chat.chats
+    //             });
+    //             return acc;
+    //         }, []);
+    //         setTopics(groupedTopics);
+    //     } catch (error) {
+    //         console.log(error);
+    //     }
+    // };
     const handleSend=async()=>{
         if (!input.trim()) return;
         setIsNewChat(false);
