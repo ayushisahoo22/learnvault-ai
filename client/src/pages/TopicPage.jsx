@@ -13,8 +13,9 @@ function TopicPage({topics,setTopics,pinnedChats,setPinnedChats,notes,setNotes,d
     const navigate=useNavigate();
     const [input,setInput]=useState("");
     const selectedTopic= topics.find(topic=>topic.name === name);
-    const selectedConversation=selectedTopic?.conversations?.find(conversation=>conversation.id===Number(conversationId));
-    
+    const selectedConversation = selectedTopic?.conversations?.find(
+        conversation => conversation.id === conversationId
+    );
     const handlePin=(conversation)=>{
         const alreadyPinned= pinnedChats.find(chat=>chat.id===conversation.id)
         if(alreadyPinned) return;
@@ -69,7 +70,7 @@ function TopicPage({topics,setTopics,pinnedChats,setPinnedChats,notes,setNotes,d
                     conversations:
                     topic.conversations.map(
                         conversation=>
-                        conversation.id===Number(conversationId)
+                        conversation.id===conversationId
                         ?{
                             ...conversation,
                             chats:[
@@ -213,7 +214,7 @@ function TopicPage({topics,setTopics,pinnedChats,setPinnedChats,notes,setNotes,d
                                 gap-6
                                 ">
                                     <h4 className="text-xl font-bold text-purple-300">
-                                        {selectedConversation.title}
+                                        {selectedConversation?.title}
                                     </h4>
                                     {
                                         selectedConversation?.chats?.map(

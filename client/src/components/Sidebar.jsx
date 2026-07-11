@@ -17,7 +17,6 @@ function Sidebar({topics,darkMode,setDarkMode}){
     const user=JSON.parse(
         localStorage.getItem("user") || "{}"
     );
-    console.log(user);
     return(
         <div className={`flex flex-col h-screen w-1/4 md:w-64 lg:w-72 p-5 ${darkMode? "bg-gradient-to-b from-slate-950 to-indigo-950": "bg-gradient-to-b from-gray-100 to-gray-200"}`}>
             <div className="flex gap-3 items-center h-10">

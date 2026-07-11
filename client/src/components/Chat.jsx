@@ -1,9 +1,11 @@
 import {FaSearch } from "react-icons/fa";
 import { IoSettingsOutline,IoCloseOutline,IoSend } from 'react-icons/io5';
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import { BsPinAngleFill, BsJournalText } from 'react-icons/bs';
 import { useNavigate } from "react-router-dom";
 import Panel from "./Panel";
+import API from "../api/chatApi";
+
 function Chat({topics,setTopics,pinnedChats,notes,setPinnedChats,setNotes,darkMode,setDarkMode,search,setSearch}){
     const detectTopic=(text)=>{
 
@@ -43,125 +45,81 @@ function Chat({topics,setTopics,pinnedChats,notes,setPinnedChats,setNotes,darkMo
     const [input,setInput] = useState("");
     const [currentConversationId,setCurrentConversationId]=useState(null);
     const[isNewChat,setIsNewChat]=useState(true);
-    
+    useEffect(() => {
+        fetchChats();
+    }, []);
     const currentConversation = topics
     ?.flatMap(topic=>topic.conversations)
     ?.find(
         conversation =>
         conversation.id===currentConversationId
     );
-    const handleSend=()=>{
-
-        if(!input.trim()) return;
-
-        setIsNewChat(false);
-
-        const detectedTopic=detectTopic(input);
-
-        const userMessage={
-            sender:"user",
-            text:input
-        };
-
-        const aiMessage={
-            sender:"ai",
-            text:`I am helping you learn about ${detectedTopic}`
-        };
-
-        const newConversation={
-            id:Date.now(),
-            title:input,
-            chats:[
-                userMessage,
-                aiMessage
-            ]
-        };
-
-        let activeId=currentConversationId;
-
-        // First message after clicking New Chat
-        if(!activeId){
-            activeId=newConversation.id;
-            setCurrentConversationId(activeId);
-        }
-
-        setTopics(prev=>{
-
-            let conversationFound=false;
-
-            const updatedTopics=prev.map(topic=>{
-
-                const exists=topic.conversations?.some(
-                    conversation=>conversation.id===activeId
-                );
-
-                if(exists){
-
-                    conversationFound=true;
-
-                    return{
-                        ...topic,
-                        conversations:
-                        topic.conversations.map(
-                            conversation=>
-
-                            conversation.id===activeId
-                            ?{
-                                ...conversation,
-                                chats:[
-                                    ...conversation.chats,
-                                    userMessage,
-                                    aiMessage
-                                ]
-                            }
-                            :conversation
-                        )
+    const fetchChats = async () => {
+        try {
+            const response = await API.get("/chat");
+            const chats = response.data;
+            const groupedTopics = chats.reduce((acc, chat) => {
+                let topic = acc.find(t => t.name === chat.topic);
+                if (!topic) {
+                    topic = {
+                        name: chat.topic,
+                        conversations: []
                     };
+                    acc.push(topic);
                 }
-
-                return topic;
-            });
-
-            // New conversation
-            if(!conversationFound){
-
-                const existingTopic=
-                updatedTopics.find(
-                    topic=>topic.name===detectedTopic
-                );
-
-                if(existingTopic){
-
-                    return updatedTopics.map(topic=>
-
-                        topic.name===detectedTopic
-                        ?{
-                            ...topic,
-                            conversations:[
-                                ...topic.conversations,
-                                newConversation
-                            ]
-                        }
-                        :topic
-                    );
-                }
-
-                return[
-                    ...updatedTopics,
-                    {
-                        name:detectedTopic,
-                        conversations:[
-                            newConversation
-                        ]
-                    }
-                ];
+                topic.conversations.push({
+                    id: chat._id,
+                    title: chat.title,
+                    chats: chat.chats
+                });
+                return acc;
+            }, []);
+            setTopics(groupedTopics);
+        } catch (error) {
+            console.log(error);
+        }
+    };
+    const handleSend=async()=>{
+        if (!input.trim()) return;
+        setIsNewChat(false);
+        const detectedTopic = detectTopic(input);
+        const userMessage = {
+            sender: "user",
+            text: input
+        };
+        const aiMessage = {
+            sender: "ai",
+            text: `I am helping you learn about ${detectedTopic}`
+        };
+        try {
+            // New Chat
+            if (!currentConversationId) {
+                const response = await API.post("/chat/create", {
+                    topic: detectedTopic,
+                    title: input,
+                    chats: [
+                        userMessage,
+                        aiMessage
+                    ]
+                });
+                const createdChat = response.data.chat;
+                setCurrentConversationId(createdChat._id);
+                await fetchChats();
             }
+            // Existing Chat
+            else {
+                await API.patch(`/chat/${currentConversationId}`, {
+                    userMessage,
+                    aiMessage
+                });
 
-            return updatedTopics;
-
-        });
-
-        setInput("");
+            }
+            setInput("");
+            await fetchChats();
+        }
+        catch (error) {
+            console.log(error);
+        }
     }
     return(
         <>
@@ -254,4 +212,4 @@ function Chat({topics,setTopics,pinnedChats,notes,setPinnedChats,setNotes,darkMo
     )
 }
 
-export default Chat;
+export default Chat
