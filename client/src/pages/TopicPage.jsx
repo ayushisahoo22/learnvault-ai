@@ -19,7 +19,7 @@ function TopicPage({topics,setTopics,pinnedChats,setPinnedChats,notes,setNotes,d
     useEffect(() => {
         fetchChats();
     }, []);
-    
+    const [loading, setLoading] = useState(false);
     const handlePin=(conversation)=>{
         const alreadyPinned= pinnedChats.find(chat=>chat.id===conversation.id)
         if(alreadyPinned) return;
@@ -56,23 +56,17 @@ function TopicPage({topics,setTopics,pinnedChats,setPinnedChats,notes,setNotes,d
 
     const handleContinueChat=async()=>{
         if (!input.trim()) return;
-        const userMessage = {
-            sender: "user",
-            text: input
-        };
-        const aiMessage = {
-            sender: "ai",
-            text: `I am helping you learn about ${name}`
-        };
         try {
+            setLoading(true)
             await API.patch(`/chat/${conversationId}`, {
-                userMessage,
-                aiMessage
+                message:input
             });
             setInput("");
             await fetchChats();
         } catch (error) {
             console.log(error);
+        }finally{
+            setLoading(false)
         }
     }
     return (
@@ -245,14 +239,19 @@ function TopicPage({topics,setTopics,pinnedChats,setPinnedChats,notes,setNotes,d
                                     <div className={`flex items-center gap-3 p-3 rounded-2xl w-full md:w-[80%] lg:w-[65%] border border-purple-500/20 shadow-lg shadow-purple-500/5 ${darkMode?"bg-slate-950":"bg-white"}`}>
                                         <input type="text" value={input} placeholder="Ask anything" 
                                             onChange={(e)=>setInput(e.target.value)}
+                                            disabled={loading}
                                             onKeyDown={(e)=>{
                                                 if(e.key==="Enter"){
                                                     handleContinueChat();
                                                 }
                                             }}
                                             className={`flex-1 bg-transparent outline-none placeholder-gray-500 ${darkMode?"text-white":"text-black"}`} />
-                                        <button onClick={handleContinueChat} className="p-3 rounded-xl bg-purple-600 hover:bg-purple-700 text-white">
-                                            <IoSend/>
+                                        <button onClick={handleContinueChat} disabled={loading} className="p-3 rounded-xl bg-purple-600 hover:bg-purple-700 text-white">
+                                            {
+                                                loading
+                                                ? "Thinking..."
+                                                : <IoSend/>
+                                            }
                                         </button>
                                     </div>
                                 </div>

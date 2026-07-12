@@ -40,7 +40,7 @@ function Chat({topics,setTopics,pinnedChats,notes,setPinnedChats,setNotes,darkMo
         return "general";
     }
     const navigate=useNavigate();
-    
+    const [loading, setLoading] = useState(false);
     const [input,setInput] = useState("");
     const [currentConversationId,setCurrentConversationId]=useState(null);
     const[isNewChat,setIsNewChat]=useState(true);
@@ -53,53 +53,18 @@ function Chat({topics,setTopics,pinnedChats,notes,setPinnedChats,setNotes,darkMo
         conversation =>
         conversation.id===currentConversationId
     );
-    // const fetchChats = async () => {
-    //     try {
-    //         const response = await API.get("/chat");
-    //         const chats = response.data;
-    //         const groupedTopics = chats.reduce((acc, chat) => {
-    //             let topic = acc.find(t => t.name === chat.topic);
-    //             if (!topic) {
-    //                 topic = {
-    //                     name: chat.topic,
-    //                     conversations: []
-    //                 };
-    //                 acc.push(topic);
-    //             }
-    //             topic.conversations.push({
-    //                 id: chat._id,
-    //                 title: chat.title,
-    //                 chats: chat.chats
-    //             });
-    //             return acc;
-    //         }, []);
-    //         setTopics(groupedTopics);
-    //     } catch (error) {
-    //         console.log(error);
-    //     }
-    // };
     const handleSend=async()=>{
         if (!input.trim()) return;
         setIsNewChat(false);
         const detectedTopic = detectTopic(input);
-        const userMessage = {
-            sender: "user",
-            text: input
-        };
-        const aiMessage = {
-            sender: "ai",
-            text: `I am helping you learn about ${detectedTopic}`
-        };
         try {
             // New Chat
             if (!currentConversationId) {
+                setLoading(true);
                 const response = await API.post("/chat/create", {
                     topic: detectedTopic,
                     title: input,
-                    chats: [
-                        userMessage,
-                        aiMessage
-                    ]
+                    message: input
                 });
                 const createdChat = response.data.chat;
                 setCurrentConversationId(createdChat._id);
@@ -108,8 +73,7 @@ function Chat({topics,setTopics,pinnedChats,notes,setPinnedChats,setNotes,darkMo
             // Existing Chat
             else {
                 await API.patch(`/chat/${currentConversationId}`, {
-                    userMessage,
-                    aiMessage
+                    message:input
                 });
 
             }
@@ -118,6 +82,9 @@ function Chat({topics,setTopics,pinnedChats,notes,setPinnedChats,setNotes,darkMo
         }
         catch (error) {
             console.log(error);
+        }
+        finally{
+            setLoading(false)
         }
     }
     return(
@@ -200,8 +167,12 @@ function Chat({topics,setTopics,pinnedChats,notes,setPinnedChats,setNotes,darkMo
                                 }
                             }}
                             className={`flex-1 bg-transparent outline-none placeholder-gray-500 ${darkMode?"text-white":"text-black"}`}/>
-                        <button onClick={handleSend} className="p-3 rounded-xl bg-purple-600 hover:bg-purple-700 text-white">
-                            <IoSend/>
+                        <button onClick={handleSend} disabled={loading} className="p-3 rounded-xl bg-purple-600 hover:bg-purple-700 text-white">
+                            {
+                                loading
+                                ? "Thinking..."
+                                : <IoSend/>
+                            }
                         </button>
                     </div>
                 </div>

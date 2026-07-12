@@ -1,15 +1,26 @@
 import { Chat } from "../models/chat.model.js";
+import { generateResponse } from "../services/gemini.service.js";
 
 // Create New Chat
 export const createChat = async (req, res) => {
     console.log("Reached createChat");
     try {
-        const { topic, title, chats } = req.body;
+        const { topic, title, message } = req.body;
+        const aiReply = await generateResponse(message);
         const chat = await Chat.create({
             user: req.user.id,
             topic,
             title,
-            chats
+            chats: [
+                {
+                    sender: "user",
+                    text: message
+                },
+                {
+                    sender: "ai",
+                    text: aiReply
+                }
+            ]
         });
         return res.status(201).json({
             message: "Chat Created Successfully",
@@ -17,7 +28,7 @@ export const createChat = async (req, res) => {
         });
 
     } catch (error) {
-        return res.status(500).json({
+        return res.status(501).json({
             message: error.message
         });
 

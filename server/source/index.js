@@ -14,6 +14,8 @@ app.use("/api/auth",router);
 import chatRouter from "./routes/chat.routes.js";
 app.use("/api/chat",chatRouter);
 
+import testRouter from "./routes/test.routes.js";
+app.use("/api/test", testRouter);
 app.get("/",(req,res)=>{
     res.send("Backend Running");
 })
