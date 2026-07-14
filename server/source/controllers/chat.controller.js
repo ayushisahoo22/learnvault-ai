@@ -85,7 +85,7 @@ export const getSingleChat = async (req, res) => {
 // Continue Existing Chat
 export const continueChat = async (req, res) => {
     try {
-        const { userMessage, aiMessage } = req.body;
+        const { message } = req.body;
         const chat = await Chat.findOne({
             _id: req.params.id,
             user: req.user.id
@@ -96,8 +96,22 @@ export const continueChat = async (req, res) => {
             });
 
         }
-        chat.chats.push(userMessage);
-        chat.chats.push(aiMessage);
+        let conversation = "";
+        chat.chats.forEach((msg) => {
+            conversation += `${msg.sender.toUpperCase()}: ${msg.text}\n`;
+        });
+
+        // Add latest user message
+        conversation += `USER: ${message}\nAI:`;
+        const aiReply = await generateResponse(conversation);
+        chat.chats.push({
+            sender: "user",
+            text: message
+        });
+        chat.chats.push({
+            sender: "ai",
+            text: aiReply
+        });
         await chat.save();
         return res.status(200).json({
             message: "Chat Updated",

@@ -8,6 +8,9 @@ import { useState,useEffect } from "react";
 import { BsPinAngleFill, BsJournalText } from 'react-icons/bs';
 import { MdDeleteOutline } from "react-icons/md";
 import API from "../api/chatApi";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+
 function TopicPage({topics,setTopics,pinnedChats,setPinnedChats,notes,setNotes,darkMode,setDarkMode,search,setSearch,fetchChats}){
     const {name,conversationId}=useParams();
     const navigate=useNavigate();
@@ -220,7 +223,7 @@ function TopicPage({topics,setTopics,pinnedChats,setPinnedChats,notes,setNotes,d
                                                 max-w-[70%]
 
                                                 ${
-                                                    chat.sender==="user"
+                                                    chat?.sender==="user"
                                                     ?"bg-purple-600 text-white"
                                                     :
                                                     darkMode
@@ -229,7 +232,15 @@ function TopicPage({topics,setTopics,pinnedChats,setPinnedChats,notes,setNotes,d
                                                 }
                                                 `}
                                             >
-                                                {chat.text}
+                                                {
+                                                    chat.sender === "ai" ? (
+                                                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                                            {chat.text}
+                                                        </ReactMarkdown>
+                                                    ) : (
+                                                        chat.text
+                                                    )
+                                                }
                                             </div>
                                         </div>
                                     ))

@@ -5,6 +5,9 @@ import { BsPinAngleFill, BsJournalText } from 'react-icons/bs';
 import { useNavigate } from "react-router-dom";
 import Panel from "./Panel";
 import API from "../api/chatApi";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+
 function Chat({topics,setTopics,pinnedChats,notes,setPinnedChats,setNotes,darkMode,setDarkMode,search,setSearch,fetchChats}){
     const detectTopic=(text)=>{
 
@@ -147,7 +150,15 @@ function Chat({topics,setTopics,pinnedChats,notes,setPinnedChats,setNotes,darkMo
                                                     }
                                                     `}
                                                 >
-                                                    {chat.text}
+                                                    {
+                                                        chat.sender === "ai" ? (
+                                                            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                                                {chat.text}
+                                                            </ReactMarkdown>
+                                                        ) : (
+                                                            chat.text
+                                                        )
+                                                    }
                                                 </div>
                                             </div>
 
