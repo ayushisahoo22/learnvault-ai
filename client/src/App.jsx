@@ -8,7 +8,6 @@ import { useState } from "react";
 import API from "./api/chatApi";
 function App() {
     const [topics,setTopics] = useState([]);
-    const [pinnedChats,setPinnedChats]=useState([]);
     const [notes,setNotes]=useState([]);
     const [darkMode,setDarkMode]=useState(true);
     const[search,setSearch]=useState("");
@@ -29,7 +28,8 @@ function App() {
                 topic.conversations.push({
                     id: chat._id,
                     title: chat.title,
-                    chats: chat.chats
+                    chats: chat.chats,
+                    isPinned: chat.isPinned
                 });
                 return acc;
             }, []);
@@ -53,8 +53,6 @@ function App() {
                             <Dashboard
                             topics={topics}
                             setTopics={setTopics}
-                            pinnedChats={pinnedChats}
-                            setPinnedChats={setPinnedChats}
                             notes={notes}
                             setNotes={setNotes}
                             darkMode={darkMode}
@@ -70,8 +68,6 @@ function App() {
                             <TopicPage
                             topics={topics}
                             setTopics={setTopics}
-                            pinnedChats={pinnedChats}
-                            setPinnedChats={setPinnedChats}
                             notes={notes}
                             setNotes={setNotes}
                             darkMode={darkMode}

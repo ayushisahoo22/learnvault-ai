@@ -4,10 +4,20 @@ import { useState } from "react";
 import { BsPinAngleFill, BsJournalText } from 'react-icons/bs';
 import { useNavigate } from "react-router-dom";
 import { MdDeleteOutline } from "react-icons/md";
+import API from "../api/chatApi";
 
-function Panel({setIsNewChat,setInput,setCurrentConversationId,pinnedChats,notes,setPinnedChats,setNotes,setDarkMode,darkMode,topics,search,setSearch}){
+function Panel({setIsNewChat,setInput,setCurrentConversationId,notes,setNotes,setDarkMode,darkMode,topics,search,setSearch,fetchChats}){
     const [showPanel,setShowPanel]=useState(false);
     const [activeTab,setActiveTab]=useState("pinned");
+    const pinnedConversations = topics
+    ?.flatMap(topic =>
+        topic.conversations.map(conversation => ({
+            ...conversation,
+            topicName: topic.name
+        }))
+    )
+    ?.filter(conversation => conversation.isPinned);
+
     const navigate=useNavigate();
     const searchResults=topics?.flatMap(topic=>
         topic.conversations.filter(conversation=>
@@ -31,13 +41,16 @@ function Panel({setIsNewChat,setInput,setCurrentConversationId,pinnedChats,notes
         setInput?.("");
         navigate("/");
     }
-    const handlePin=(conversation)=>{
-        setPinnedChats(prev=>
-            prev.filter(chat=>
-                chat.id!==conversation.id
-            )
-        )
-    }
+    const handlePin = async (conversation) => {
+        try {
+            await API.patch(`/chat/pin/${conversation.id}`);
+
+            await fetchChats();
+
+        } catch (error) {
+            console.log(error);
+        }
+    };
     const handleDelete=(conversationId)=>{
         setNotes(prev=>
             prev.filter(chat=>
@@ -140,10 +153,10 @@ function Panel({setIsNewChat,setInput,setCurrentConversationId,pinnedChats,notes
                             </div>
                             <div className="mt-4 flex-1 overflow-y-auto pr-2">{
                                 activeTab==="pinned"?(
-                                    pinnedChats?.length>0?(
+                                    pinnedConversations?.length>0?(
                                         <div>
-                                            {pinnedChats.map((chat,index)=>(
-                                                <div key={index} className={`flex justify-between p-3 rounded-xl mb-2 ${darkMode?"bg-slate-800 text-gray-200":"bg-white text-black border"}`}>
+                                            {pinnedConversations.map((chat,index)=>(
+                                                <div key={index} onClick={() =>navigate(`/topic/${chat.topicName}/${chat.id}`)}className={`flex justify-between p-3 rounded-xl mb-2 ${darkMode?"bg-slate-800 text-gray-200":"bg-white text-black border"}`}>
                                                     {chat.title}
                                                     <button
                                                     title="Unpin Chat"

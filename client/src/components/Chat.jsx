@@ -8,7 +8,7 @@ import API from "../api/chatApi";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
-function Chat({topics,setTopics,pinnedChats,notes,setPinnedChats,setNotes,darkMode,setDarkMode,search,setSearch,fetchChats}){
+function Chat({topics,setTopics,notes,setNotes,darkMode,setDarkMode,search,setSearch,fetchChats}){
     const detectTopic=(text)=>{
 
         text=text.toLowerCase();
@@ -93,8 +93,9 @@ function Chat({topics,setTopics,pinnedChats,notes,setPinnedChats,setNotes,darkMo
     return(
         <>
             <div className={`flex-1 flex flex-col ${darkMode?"bg-slate-950":"bg-gray-100"} transition-all duration-300 p-6 h-full overflow-hidden`}>
-                <Panel setIsNewChat={setIsNewChat} setInput={setInput} setCurrentConversationId={setCurrentConversationId} pinnedChats={pinnedChats} notes={notes}
-                setPinnedChats={setPinnedChats} setNotes={setNotes} setDarkMode={setDarkMode} darkMode={darkMode} topics={topics} search={search} setSearch={setSearch}/>
+                <Panel setIsNewChat={setIsNewChat} setInput={setInput} setCurrentConversationId={setCurrentConversationId} notes={notes}
+             setNotes={setNotes} setDarkMode={setDarkMode} darkMode={darkMode} topics={topics} search={search} setSearch={setSearch}
+                fetchChats={fetchChats}/>
                     <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
                         { isNewChat || topics?.length===0?(
                             <div className="flex-1

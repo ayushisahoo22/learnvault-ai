@@ -36,7 +36,11 @@ const chatSchema = new mongoose.Schema(
             required: true
         },
 
-        chats: [messageSchema]
+        chats: [messageSchema],
+        isPinned: {
+            type: Boolean,
+            default: false
+        }
     },
     {
         timestamps: true

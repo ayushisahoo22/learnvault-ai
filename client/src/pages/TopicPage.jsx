@@ -11,7 +11,7 @@ import API from "../api/chatApi";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
-function TopicPage({topics,setTopics,pinnedChats,setPinnedChats,notes,setNotes,darkMode,setDarkMode,search,setSearch,fetchChats}){
+function TopicPage({topics,setTopics,notes,setNotes,darkMode,setDarkMode,search,setSearch,fetchChats}){
     const {name,conversationId}=useParams();
     const navigate=useNavigate();
     const [input,setInput]=useState("");
@@ -23,14 +23,14 @@ function TopicPage({topics,setTopics,pinnedChats,setPinnedChats,notes,setNotes,d
         fetchChats();
     }, []);
     const [loading, setLoading] = useState(false);
-    const handlePin=(conversation)=>{
-        const alreadyPinned= pinnedChats.find(chat=>chat.id===conversation.id)
-        if(alreadyPinned) return;
-        setPinnedChats(prev=>[
-            ...prev,
-            conversation
-        ])
-    }
+    const handlePin = async (conversation) => {
+        try {
+            await API.patch(`/chat/pin/${conversation.id}`);
+            await fetchChats();
+        } catch (error) {
+            console.log(error);
+        }
+    };
     const handleNotes=(conversation)=>{
         const alreadyNoted= notes.find(chat=>chat.id===conversation.id)
         if(alreadyNoted) return;
@@ -47,9 +47,6 @@ function TopicPage({topics,setTopics,pinnedChats,setPinnedChats,notes,setNotes,d
         if (!confirmDelete) return;
         try {
             await API.delete(`/chat/${conversationId}`);
-            setPinnedChats(prev =>
-                prev.filter(chat => chat.id !== conversationId)
-            );
             await fetchChats();
             navigate(`/topic/${name}`);
         } catch (error) {
@@ -77,8 +74,8 @@ function TopicPage({topics,setTopics,pinnedChats,setPinnedChats,notes,setNotes,d
 
             <Sidebar topics={topics} darkMode={darkMode} setDarkMode={setDarkMode}/>
             <div className="flex-1 p-6 flex flex-col h-screen overflow-hidden">
-                <Panel pinnedChats={pinnedChats} notes={notes} setPinnedChats={setPinnedChats} setNotes={setNotes} darkMode={darkMode} setDarkMode={setDarkMode}
-                search={search} setSearch={setSearch} topics={topics}/>
+                <Panel notes={notes} setNotes={setNotes} darkMode={darkMode} setDarkMode={setDarkMode}
+                search={search} setSearch={setSearch} topics={topics} fetchChats={fetchChats}/>
                 <div className="mt-10">
                     <h1 className="
                     text-4xl

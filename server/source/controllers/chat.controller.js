@@ -28,7 +28,7 @@ export const createChat = async (req, res) => {
         });
 
     } catch (error) {
-        return res.status(501).json({
+        return res.status(500).json({
             message: error.message
         });
 
@@ -97,12 +97,12 @@ export const continueChat = async (req, res) => {
 
         }
         let conversation = "";
+
         chat.chats.forEach((msg) => {
-            conversation += `${msg.sender.toUpperCase()}: ${msg.text}\n`;
+            conversation += `${msg.sender === "user" ? "User" : "Assistant"}: ${msg.text}\n`;
         });
 
-        // Add latest user message
-        conversation += `USER: ${message}\nAI:`;
+        conversation += `User: ${message}\nAssistant:`;
         const aiReply = await generateResponse(conversation);
         chat.chats.push({
             sender: "user",
@@ -146,6 +146,29 @@ export const deleteChat = async (req, res) => {
         return res.status(200).json({
             message: "Chat Deleted Successfully"
         });
+
+    } catch (error) {
+        return res.status(500).json({
+            message: error.message
+        });
+
+    }
+};
+
+export const togglePin = async (req, res) => {
+    try {
+        const chat = await Chat.findOne({
+            _id: req.params.id,
+            user: req.user.id
+        });
+        if (!chat) {
+            return res.status(404).json({
+                message: "Chat Not Found"
+            });
+        }
+        chat.isPinned = !chat.isPinned;
+        await chat.save();
+        return res.status(200).json(chat);
 
     } catch (error) {
         return res.status(500).json({
