@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { MdDeleteOutline } from "react-icons/md";
 import API from "../api/chatApi";
 
-function Panel({setIsNewChat,setInput,setCurrentConversationId,notes,setNotes,setDarkMode,darkMode,topics,search,setSearch,fetchChats}){
+function Panel({setIsNewChat,setInput,setCurrentConversationId,setDarkMode,darkMode,topics,search,setSearch,fetchChats}){
     const [showPanel,setShowPanel]=useState(false);
     const [activeTab,setActiveTab]=useState("pinned");
     const pinnedConversations = topics
@@ -17,6 +17,15 @@ function Panel({setIsNewChat,setInput,setCurrentConversationId,notes,setNotes,se
         }))
     )
     ?.filter(conversation => conversation.isPinned);
+
+    const generatedNotes = topics
+    ?.flatMap(topic =>
+        topic.conversations.map(conversation => ({
+            ...conversation,
+            topicName: topic.name
+        }))
+    )
+    ?.filter(conversation => conversation.isNote);
 
     const navigate=useNavigate();
     const searchResults=topics?.flatMap(topic=>
@@ -51,12 +60,14 @@ function Panel({setIsNewChat,setInput,setCurrentConversationId,notes,setNotes,se
             console.log(error);
         }
     };
-    const handleDelete=(conversationId)=>{
-        setNotes(prev=>
-            prev.filter(chat=>
-                chat.id!==conversationId
-            )
-        )
+    const handleDelete=async (conversation)=>{
+        try {
+            await API.patch(`/chat/note/${conversation.id}`);
+            await fetchChats();
+
+        } catch (error) {
+            console.log(error);
+        }
     }
     return(
         <>
@@ -183,18 +194,16 @@ function Panel({setIsNewChat,setInput,setCurrentConversationId,notes,setNotes,se
                                             </p>
                                         </div>
                                     )):(
-                                        notes?.length>0?(
+                                        generatedNotes?.length>0?(
                                             <div>
-                                                {notes.map((note,index)=>(
+                                                {generatedNotes.map((note,index)=>(
                                                     <div key={index} className={`flex justify-between p-3 rounded-xl mb-2 ${darkMode?"bg-slate-800 text-gray-200":"bg-white text-black border"}`}>
                                                         {note.title}
                                                         <button
                                                             title="Delete Notes"
                                                             onClick={(e)=>{
                                                                 e.stopPropagation();
-                                                                handleDelete(
-                                                                    note.id
-                                                                );
+                                                                handleDelete(note);
                                                             }}
                                                         >
                                                             <MdDeleteOutline

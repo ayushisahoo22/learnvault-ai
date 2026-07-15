@@ -40,7 +40,15 @@ const chatSchema = new mongoose.Schema(
         isPinned: {
             type: Boolean,
             default: false
-        }
+        },
+        isNote: {
+            type: Boolean,
+            default: false
+        },
+        notes: {
+        type: String,
+        default: ""
+    },
     },
     {
         timestamps: true

@@ -11,7 +11,7 @@ import API from "../api/chatApi";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
-function TopicPage({topics,setTopics,notes,setNotes,darkMode,setDarkMode,search,setSearch,fetchChats}){
+function TopicPage({topics,setTopics,darkMode,setDarkMode,search,setSearch,fetchChats}){
     const {name,conversationId}=useParams();
     const navigate=useNavigate();
     const [input,setInput]=useState("");
@@ -31,13 +31,13 @@ function TopicPage({topics,setTopics,notes,setNotes,darkMode,setDarkMode,search,
             console.log(error);
         }
     };
-    const handleNotes=(conversation)=>{
-        const alreadyNoted= notes.find(chat=>chat.id===conversation.id)
-        if(alreadyNoted) return;
-        setNotes(prev=>[
-            ...prev,
-            conversation
-        ])
+    const handleNotes=async(conversation)=>{
+        try {
+            await API.patch(`/chat/note/${conversation.id}`);
+            await fetchChats();
+        } catch (error) {
+            console.log(error.message);
+        }
     }
 
     const handleDelete=async(conversationId)=>{
@@ -74,7 +74,7 @@ function TopicPage({topics,setTopics,notes,setNotes,darkMode,setDarkMode,search,
 
             <Sidebar topics={topics} darkMode={darkMode} setDarkMode={setDarkMode}/>
             <div className="flex-1 p-6 flex flex-col h-screen overflow-hidden">
-                <Panel notes={notes} setNotes={setNotes} darkMode={darkMode} setDarkMode={setDarkMode}
+                <Panel darkMode={darkMode} setDarkMode={setDarkMode}
                 search={search} setSearch={setSearch} topics={topics} fetchChats={fetchChats}/>
                 <div className="mt-10">
                     <h1 className="

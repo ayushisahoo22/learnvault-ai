@@ -177,3 +177,43 @@ export const togglePin = async (req, res) => {
 
     }
 };
+
+export const generateNotes = async (req, res) => {
+    try {
+        const chat = await Chat.findOne({
+            _id: req.params.id,
+            user: req.user.id
+        });
+    
+        if (!chat) {
+            return res.status(404).json({
+                message: "Chat Not Found"
+            });
+        }
+        let conversation = "";
+        chat.chats.forEach(msg => {
+            conversation += `${msg.sender}: ${msg.text}\n`;
+        });
+    
+        const prompt = `
+        Generate concise study notes from this conversation.
+        Requirements:
+        - Proper Markdown
+        - Headings
+        - Bullet points
+        - Important concepts
+        - Key takeaways
+        - Small examples if needed
+    
+        Conversation: ${conversation}`;
+        const generatedNotes = await generateResponse(prompt);
+        chat.notes = generatedNotes;
+        chat.isNote = true;
+        await chat.save();
+        return res.status(200).json(chat);
+    } catch (error) {
+        return res.status(500).json({
+            message: error.message
+        });
+    }
+}

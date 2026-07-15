@@ -4,8 +4,7 @@ function Dashboard({topics,setTopics,pinnedChats,notes,setPinnedChats,setNotes,d
     return(
         <div className="flex h-screen overflow-hidden bg-slate-950">
             <Sidebar topics={topics} darkMode={darkMode} setDarkMode={setDarkMode}/>    
-            <Chat topics={topics} setTopics={setTopics} notes={notes}
-            darkMode={darkMode} setDarkMode={setDarkMode} setNotes={setNotes} search={search} setSearch={setSearch}
+            <Chat topics={topics} setTopics={setTopics} darkMode={darkMode} setDarkMode={setDarkMode} setNotes={setNotes} search={search} setSearch={setSearch}
             fetchChats={fetchChats}/>
         </div>
     )
