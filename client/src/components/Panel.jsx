@@ -5,10 +5,13 @@ import { BsPinAngleFill, BsJournalText } from 'react-icons/bs';
 import { useNavigate } from "react-router-dom";
 import { MdDeleteOutline } from "react-icons/md";
 import API from "../api/chatApi";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 function Panel({setIsNewChat,setInput,setCurrentConversationId,setDarkMode,darkMode,topics,search,setSearch,fetchChats}){
     const [showPanel,setShowPanel]=useState(false);
     const [activeTab,setActiveTab]=useState("pinned");
+    const [selectedNote,setSelectedNote]= useState(null);
     const pinnedConversations = topics
     ?.flatMap(topic =>
         topic.conversations.map(conversation => ({
@@ -197,7 +200,7 @@ function Panel({setIsNewChat,setInput,setCurrentConversationId,setDarkMode,darkM
                                         generatedNotes?.length>0?(
                                             <div>
                                                 {generatedNotes.map((note,index)=>(
-                                                    <div key={index} className={`flex justify-between p-3 rounded-xl mb-2 ${darkMode?"bg-slate-800 text-gray-200":"bg-white text-black border"}`}>
+                                                    <div key={index} onClick={() =>setSelectedNote(note)} className={`flex justify-between p-3 rounded-xl mb-2 ${darkMode?"bg-slate-800 text-gray-200":"bg-white text-black border"}`}>
                                                         {note.title}
                                                         <button
                                                             title="Delete Notes"
@@ -230,6 +233,58 @@ function Panel({setIsNewChat,setInput,setCurrentConversationId,setDarkMode,darkM
                     )
                 }
 
+                {
+                    selectedNote && (
+                        <div
+                            className="
+                            fixed
+                            inset-0
+                            bg-black/50
+                            flex
+                            justify-center
+                            items-center
+                            z-50
+                            "
+                        >
+
+                            <div
+                                className="
+                                bg-slate-900
+                                text-white
+                                w-[80%]
+                                h-[80%]
+                                rounded-xl
+                                p-6
+                                overflow-y-auto
+                                "
+                            >
+
+                                <button
+                                    onClick={() => setSelectedNote(null)}
+                                    className="
+                                    bg-red-500
+                                    px-3
+                                    py-1
+                                    rounded
+                                    mb-4
+                                    "
+                                >
+                                    Close
+                                </button>
+
+                                <h2 className="text-2xl font-bold mb-4">
+                                    {selectedNote.title}
+                                </h2>
+
+                                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                    {selectedNote.notes}
+                                </ReactMarkdown>
+
+                            </div>
+
+                        </div>
+                    )
+                }
             </div>
         </>
     )
