@@ -65,11 +65,13 @@ function Panel({setIsNewChat,setInput,setCurrentConversationId,setDarkMode,darkM
     };
     const handleDelete=async (conversation)=>{
         try {
-            await API.patch(`/chat/note/${conversation.id}`);
+            await API.patch(`/chat/note/remove/${conversation.id}`);
             await fetchChats();
 
         } catch (error) {
             console.log(error);
+    console.log(error.response);
+    console.log(error.response?.data);
         }
     }
     return(

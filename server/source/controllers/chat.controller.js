@@ -196,15 +196,35 @@ export const generateNotes = async (req, res) => {
         });
     
         const prompt = `
-        Generate concise study notes from this conversation.
+        You are an expert study assistant.
+        Read the following conversation carefully and create COMPLETE study notes.
+
         Requirements:
-        - Proper Markdown
-        - Headings
-        - Bullet points
-        - Important concepts
-        - Key takeaways
-        - Small examples if needed
-    
+        - Cover every important concept discussed.
+        - Do NOT skip explanations.
+        - Preserve the logical flow of the conversation.
+        - Include all definitions.
+        - Include all examples.
+        - Include all code snippets if discussed.
+        - Explain why the code works.
+        - Mention advantages, disadvantages, and use cases whenever relevant.
+        - Highlight important interview points.
+        - Mention common mistakes and pitfalls if discussed.
+        - Add tips and best practices.
+        - At the end, provide a concise revision section.
+
+        Format the response in proper Markdown.
+        Use this structure:
+        # Topic Name
+        ## Overview
+        ## Concepts
+        ## Detailed Explanation
+        ## Examples
+        ## Code (if any)
+        ## Important Points
+        ## Common Mistakes
+        ## Interview Questions
+        ## Quick Revision
         Conversation: ${conversation}`;
         const generatedNotes = await generateResponse(prompt);
         chat.notes = generatedNotes;
@@ -217,3 +237,33 @@ export const generateNotes = async (req, res) => {
         });
     }
 }
+
+export const removeNotes = async (req, res) => {
+    try {
+        const chat = await Chat.findOne({
+            _id: req.params.id,
+            user: req.user.id
+        });
+
+        if (!chat) {
+            return res.status(404).json({
+                message: "Chat Not Found"
+            });
+        }
+
+        chat.isNote = false;
+        chat.notes = "";
+
+        await chat.save();
+
+        return res.status(200).json({
+            message: "Notes Removed",
+            chat
+        });
+
+    } catch (error) {
+        return res.status(500).json({
+            message: error.message
+        });
+    }
+};

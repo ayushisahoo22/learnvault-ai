@@ -6,7 +6,8 @@ import {
     continueChat,
     deleteChat,
     togglePin,
-    generateNotes
+    generateNotes,
+    removeNotes
 } from "../controllers/chat.controller.js";
 import verifyJWT from "../middlewares/auth.middleware.js";
 
@@ -17,6 +18,7 @@ router.get("/:id", verifyJWT, getSingleChat);
 router.patch("/:id", verifyJWT, continueChat);  //to change part of a resource
 router.patch("/pin/:id", verifyJWT, togglePin);
 router.patch("/note/:id",verifyJWT,generateNotes);
+router.patch("/note/remove/:id",verifyJWT,removeNotes);
 router.delete("/:id", verifyJWT, deleteChat);
 
 export default router;
