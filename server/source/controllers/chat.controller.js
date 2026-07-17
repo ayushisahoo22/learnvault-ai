@@ -1,11 +1,12 @@
 import { Chat } from "../models/chat.model.js";
 import { generateResponse } from "../services/gemini.service.js";
+import {detectTopic} from "../services/topic.service.js";
 
 // Create New Chat
 export const createChat = async (req, res) => {
-    console.log("Reached createChat");
     try {
-        const { topic, title, message } = req.body;
+        const { title, message } = req.body;
+        const topic = await detectTopic(message);
         const aiReply = await generateResponse(message);
         const chat = await Chat.create({
             user: req.user.id,

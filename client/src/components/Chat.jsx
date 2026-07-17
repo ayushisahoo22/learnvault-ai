@@ -9,39 +9,6 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
 function Chat({topics,setTopics,darkMode,setDarkMode,search,setSearch,fetchChats}){
-    const detectTopic=(text)=>{
-
-        text=text.toLowerCase();
-
-        if(
-            text.includes("array") ||
-            text.includes("tree") ||
-            text.includes("binary") ||
-            text.includes("linked list") ||
-            text.includes("graph")
-        ){
-            return "dsa";
-        }
-
-        if(
-            text.includes("react") ||
-            text.includes("hook") ||
-            text.includes("component")
-        ){
-            return "react";
-        }
-
-        if(
-            text.includes("html") ||
-            text.includes("css") ||
-            text.includes("api") ||
-            text.includes("javascript")
-        ){
-            return "web";
-        }
-
-        return "general";
-    }
     const navigate=useNavigate();
     const [loading, setLoading] = useState(false);
     const [input,setInput] = useState("");
@@ -59,13 +26,11 @@ function Chat({topics,setTopics,darkMode,setDarkMode,search,setSearch,fetchChats
     const handleSend=async()=>{
         if (!input.trim()) return;
         setIsNewChat(false);
-        const detectedTopic = detectTopic(input);
         try {
             // New Chat
             if (!currentConversationId) {
                 setLoading(true);
                 const response = await API.post("/chat/create", {
-                    topic: detectedTopic,
                     title: input,
                     message: input
                 });
